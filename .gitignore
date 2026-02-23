@@ -132,6 +132,23 @@ dist
 !.yarn/plugins
 !.yarn/releases
 !.yarn/sdks
+
+# --- MERN Specifics ---
+# Local Database
+data/
+db/
+
+# Production Builds
+/client/build/
+/client/dist/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Frontend/Backend specific envs if they aren't caught
+client/.env.local
+server/.env.local
 !.yarn/versions
 
 # Vite logs files
