@@ -1,6 +1,6 @@
-# ⚡ Electricity Bill Management System (EBMS)
+# Electricity Bill Management System (EBMS)
 
-A simple, structured, and scalable **MERN stack web application** designed to manage electricity billing for college departments or buildings.
+A simple, structured, and scalable MERN stack web application designed to manage electricity billing for college departments or buildings.
 
 The system enables administrators to:
 
@@ -12,7 +12,7 @@ The system enables administrators to:
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 Electricity tracking in many colleges is handled manually or via spreadsheets, which leads to:
 
@@ -21,11 +21,11 @@ Electricity tracking in many colleges is handled manually or via spreadsheets, w
 - Poor historical tracking  
 - Limited reporting visibility  
 
-**EBMS digitizes the complete billing workflow**, from meter reading entry to payment tracking.
+EBMS digitizes the complete billing workflow, from meter reading entry to payment tracking.
 
 ---
 
-## 🎯 Core Features
+## Core Features
 
 - Department / Building management  
 - Monthly meter reading entry  
@@ -37,7 +37,7 @@ Electricity tracking in many colleges is handled manually or via spreadsheets, w
 
 ---
 
-## 🏗 Tech Stack
+## Tech Stack
 
 ### Frontend
 - React.js  
@@ -57,7 +57,7 @@ Electricity tracking in many colleges is handled manually or via spreadsheets, w
 
 ---
 
-## 🧠 System Architecture
+## System Architecture
 
 ```
 Client (React + TypeScript)
@@ -69,9 +69,9 @@ MongoDB Database
 
 ---
 
-# ⚙️ Setup & Installation Guide
+# Setup & Installation Guide
 
-## 1️⃣ Prerequisites
+## 1. Prerequisites
 
 Ensure the following are installed:
 
@@ -89,7 +89,7 @@ npm -v
 
 ---
 
-## 2️⃣ Clone the Repository
+## 2. Clone the Repository
 
 ```bash
 git clone <your-repository-url>
@@ -98,7 +98,7 @@ cd ebms
 
 ---
 
-## 3️⃣ Project Structure
+## 3. Project Structure
 
 ```
 ebms/
@@ -110,7 +110,7 @@ Both must be configured separately.
 
 ---
 
-# 🔧 Backend Setup (Express + MongoDB)
+# Backend Setup (Express + MongoDB)
 
 ## Step 1: Navigate
 
@@ -165,7 +165,7 @@ MongoDB Connected
 
 ---
 
-# 🎨 Frontend Setup (React + TypeScript)
+# Frontend Setup (React + TypeScript)
 
 ## Step 1: Navigate
 
@@ -201,7 +201,7 @@ http://localhost:5173
 
 ---
 
-# 🗄 Database Setup
+# Database Setup
 
 If using local MongoDB:
 
@@ -213,7 +213,7 @@ Database `ebms` will be created automatically on first insert.
 
 ---
 
-# 🔐 First-Time Admin Setup
+# First-Time Admin Setup
 
 Use Postman or any API client:
 
@@ -245,7 +245,7 @@ Authorization: Bearer <token>
 
 ---
 
-# 📂 Backend Data Models
+# Backend Data Models
 
 ## 1. Department
 - name  
@@ -288,7 +288,7 @@ Authorization: Bearer <token>
 
 ---
 
-# 🔄 Application Flow
+# Application Flow
 
 1. Admin adds Department  
 2. Admin enters monthly meter reading  
@@ -308,7 +308,7 @@ totalAmount = unitsConsumed × ratePerUnit
 
 ---
 
-# 🛠 API Endpoints
+# API Endpoints
 
 ## Authentication
 - POST `/api/auth/register`
@@ -341,7 +341,7 @@ totalAmount = unitsConsumed × ratePerUnit
 
 ---
 
-# 🚀 Production Build
+# Production Build
 
 ### Backend
 ```
@@ -360,7 +360,7 @@ Deploy frontend to:
 
 ---
 
-# 📁 Suggested Folder Structure
+# Suggested Folder Structure
 
 ```
 backend/
@@ -382,7 +382,7 @@ frontend/
 
 ---
 
-# 📊 Future Improvements
+# Future Improvements
 
 - Analytics dashboard  
 - PDF bill export  
@@ -393,13 +393,13 @@ frontend/
 
 ---
 
-# 👨‍💻 Author
+# Author
 
-**Aditya Singh**  
+Aditya Singh  
 MERN Stack Developer  
 
 ---
 
-# 📜 License
+# License
 
 This project is intended for educational and institutional use.
