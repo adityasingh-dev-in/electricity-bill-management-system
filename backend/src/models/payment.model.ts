@@ -7,9 +7,9 @@ const paymentSchema: Schema<IPayment> = new Schema({
         ref: 'Bill',
         required: true
     },
-    departmentId: {
+    consumerId: {
         type: Schema.Types.ObjectId,
-        ref: 'Department',
+        ref: 'Consumer',
         required: true
     },
     amountPaid: {

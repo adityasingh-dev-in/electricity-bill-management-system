@@ -2,9 +2,9 @@ import { Schema, model } from "mongoose";
 import { IBill } from "../types/bill.type";
 
 const billSchema: Schema<IBill> = new Schema({
-    departmentId: {
+    consumerId: {
         type: Schema.Types.ObjectId,
-        ref: 'Department',
+        ref: 'Consumer',
         required: true
     },
     meterReadingId: {

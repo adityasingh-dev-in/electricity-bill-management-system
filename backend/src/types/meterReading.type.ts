@@ -1,7 +1,7 @@
 import { Document, Schema } from "mongoose";
 
 export interface IMeterReading extends Document {
-    departmentId: Schema.Types.ObjectId;
+    consumerId: Schema.Types.ObjectId;
     readingMonth: string;
     readingYear: number;
     previousReading: number;

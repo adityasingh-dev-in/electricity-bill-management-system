@@ -2,9 +2,9 @@ import { Schema, model } from "mongoose";
 import { IComplaint } from "../types/complaint.type";
 
 const complaintSchema: Schema<IComplaint> = new Schema({
-    departmentId: {
+    consumerId: {
         type: Schema.Types.ObjectId,
-        ref: 'Department',
+        ref: 'Consumer',
         required: true
     },
     description: {

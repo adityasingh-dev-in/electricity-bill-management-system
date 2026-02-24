@@ -1,7 +1,7 @@
 import { Document, Schema } from "mongoose";
 
 export interface IBill extends Document {
-    departmentId: Schema.Types.ObjectId;
+    consumerId: Schema.Types.ObjectId;
     meterReadingId: Schema.Types.ObjectId;
     billMonth: string;
     billYear: number;

@@ -2,9 +2,9 @@ import { Schema, model } from "mongoose";
 import { IMeterReading } from "../types/meterReading.type";
 
 const meterReadingSchema: Schema<IMeterReading> = new Schema({
-    departmentId: {
+    consumerId: {
         type: Schema.Types.ObjectId,
-        ref: 'Department',
+        ref: 'Consumer',
         required: true
     },
     readingMonth: {
