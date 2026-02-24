@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
-import { IDepartment } from "../types/department.type";
+import { IConsumer } from "../types/consumer.type";
 
-const departmentSchema: Schema<IDepartment> = new Schema({
+const ConsumerSchema: Schema<IConsumer> = new Schema({
     name: {
         type: String,
         required: true,
@@ -29,4 +29,4 @@ const departmentSchema: Schema<IDepartment> = new Schema({
     }
 }, { timestamps: true });
 
-export default model<IDepartment>('Department', departmentSchema);
+export default model<IConsumer>('Consumer', ConsumerSchema);

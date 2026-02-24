@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-export interface IDepartment extends Document {
+export interface IConsumer extends Document {
     name: string;
     buildingCode: string;
     location: string;
