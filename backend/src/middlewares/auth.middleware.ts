@@ -4,7 +4,17 @@ import User from '../models/user.model';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
 
-export const verifyJWT = asyncHandler(async (req: any, res: Response, next: NextFunction) => {
+interface authRequest extends Request {
+    user?: {
+        name: string,
+        email: string,
+        role: 'staff' | 'admin',
+        isActive: boolean
+    }
+}
+
+
+export const verifyJWT = asyncHandler(async (req: authRequest, res: Response, next: NextFunction) => {
     const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token) {

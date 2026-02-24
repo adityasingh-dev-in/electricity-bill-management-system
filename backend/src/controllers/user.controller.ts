@@ -30,8 +30,12 @@ interface requestBody {
     name?: string,
     email?: string,
     role?: string,
-    isActive?: boolean
+    isActive?: boolean,
+    password?: string,
+    confirmPassword?: string
 }
+
+//these all are private routes only accesible by staff or admin
 
 export const getUser = asyncHandler(async (req: authRequest, res: Response) => {
     const user = req.user;
@@ -43,20 +47,28 @@ export const getUser = asyncHandler(async (req: authRequest, res: Response) => {
     return res.status(200).json(new ApiResponse(200, { user }, "User fetched successfully"));
 });
 
-// GET /
-// → Get all users
+export const updateUser = asyncHandler(async (req: Request<params, {}, requestBody, {}>, res: Response)=>{
+    const {id} = req.params;
+    const { name, password, confirmPassword} = req.body;
 
-// GET /:id
-// → Get single user
+    const updateData:requestBody = {}
 
-// PUT /:id
-// → Update user
+    if(name) updateData.name = name;
+    if(password && confirmPassword && password === confirmPassword){
+        updateData.password = password
+    }else{
+        throw new ApiError(400,"password and confirm password must be filled and matched!");
+    }
+    const checkUser = User.findById(id);
+    if(!checkUser) throw new ApiError(400,"no user found")
+    const user = await User.findByIdAndUpdate(id,updateData);
+    if(!user) throw new ApiError(400,"no user found")
 
-// DELETE /:id
-// → Deactivate user
+    return res.status(200).json(new ApiResponse(200,user,`data updated successfully`));
+})
 
 
-
+// these routes are only accessible by admin
 
 export const getUsersByFilter = asyncHandler(async (req: Request<{}, {}, {}, queryParams>, res: Response) => {
     const { email, name, role, isActive, sortBy, page: qPage, limit: qLimit } = req.query;
@@ -86,7 +98,7 @@ export const getUsersByFilter = asyncHandler(async (req: Request<{}, {}, {}, que
             .sort({ [sortField]: -1 })
             .skip(skip)
             .limit(limit)
-            .select('-password -refreshToken -createdAt -updatedAt')
+            .select('-password -refreshToken')
             .lean(),
         User.countDocuments(mongoQuery)
     ]);
@@ -155,7 +167,7 @@ export const DeleteUserById = asyncHandler(async (req: Request<params, {}, {}, {
         throw new ApiError(400, "Id is needed")
     }
     
-    const user = await User.findByIdAndUpdate(id).select('-password -refrenceToken');
+    const user = await User.findByIdAndDelete(id).select('-password -refrenceToken');
     if(!user){
         throw new ApiError(400,"User not found!");
     }

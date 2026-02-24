@@ -308,39 +308,6 @@ totalAmount = unitsConsumed × ratePerUnit
 
 ---
 
-# API Endpoints
-
-## Authentication
-- POST `/api/auth/register`
-- POST `/api/auth/login`
-
-## Departments
-- POST `/api/departments`
-- GET `/api/departments`
-- GET `/api/departments/:id`
-- PUT `/api/departments/:id`
-- DELETE `/api/departments/:id`
-
-## Readings
-- POST `/api/readings`
-- GET `/api/readings`
-- GET `/api/readings/:departmentId`
-- PUT `/api/readings/:id`
-- DELETE `/api/readings/:id`
-
-## Bills
-- POST `/api/bills`
-- GET `/api/bills`
-- GET `/api/bills/:departmentId`
-- PUT `/api/bills/:id/status`
-
-## Payments
-- POST `/api/payments`
-- GET `/api/payments`
-- GET `/api/payments/:billId`
-
----
-
 # Production Build
 
 ### Backend
@@ -384,12 +351,8 @@ frontend/
 
 # Future Improvements
 
-- Analytics dashboard  
-- PDF bill export  
-- Role-based access control  
+- Analytics dashboard    
 - Email notifications  
-- Automated recurring billing  
-- Rate configuration panel  
 
 ---
 

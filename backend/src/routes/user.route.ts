@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware";
-import { DeleteUserById, getUser, getUserById, getUsersByFilter, updateUserById } from "../controllers/user.controller";
+import { DeleteUserById, getUser, getUserById, getUsersByFilter, updateUser, updateUserById } from "../controllers/user.controller";
 import { verifyAdmin } from "../middlewares/admin.middleware";
 
 const router = Router();
@@ -8,6 +8,9 @@ const router = Router();
 router.use(verifyJWT)
 
 router.get('/me',getUser)
+router.put('/update',updateUser)
+
+//admin
 router.get('/fetch-users',verifyAdmin,getUsersByFilter)
 router.get('/fetch/:id',verifyAdmin,getUserById)
 router.put('/update/:id',verifyAdmin,updateUserById)
