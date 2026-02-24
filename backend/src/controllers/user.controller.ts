@@ -148,11 +148,16 @@ export const updateUserById = asyncHandler(async (req: Request<params, {}, reque
     return res.status(200).json(new ApiResponse(200, user, "User updated successfully"))
 });
 
-export const deactivateUser = asyncHandler(async (req: Request<params, {}, {}, {}>, res: Response)=>{
+export const DeleteUserById = asyncHandler(async (req: Request<params, {}, {}, {}>, res: Response)=>{
     const { id } = req.params;
 
     if (!id) {
         throw new ApiError(400, "Id is needed")
     }
-    //complete this
+    
+    const user = await User.findByIdAndUpdate(id).select('-password -refrenceToken');
+    if(!user){
+        throw new ApiError(400,"User not found!");
+    }
+    return res.status(200).json(new ApiResponse(200,user,"User is Permanently Deleted"))
 })
