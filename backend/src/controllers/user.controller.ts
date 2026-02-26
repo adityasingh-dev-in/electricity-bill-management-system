@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
+import jwt from "jsonwebtoken";
 
 interface authRequest extends Request {
     user?: {
@@ -47,25 +48,67 @@ export const getUser = asyncHandler(async (req: authRequest, res: Response) => {
     return res.status(200).json(new ApiResponse(200, { user }, "User fetched successfully"));
 });
 
-export const updateUser = asyncHandler(async (req: Request<params, {}, requestBody, {}>, res: Response)=>{
-    const {id} = req.params;
-    const { name, password, confirmPassword} = req.body;
+export const updateUser = asyncHandler(async (req: Request<params, {}, requestBody, {}>, res: Response) => {
+    const { id } = req.params;
+    const { name, password, confirmPassword } = req.body;
 
-    const updateData:requestBody = {}
+    const updateData: requestBody = {}
 
-    if(name) updateData.name = name;
-    if(password && confirmPassword && password === confirmPassword){
+    if (name) updateData.name = name;
+    if (password && confirmPassword && password === confirmPassword) {
         updateData.password = password
-    }else{
-        throw new ApiError(400,"password and confirm password must be filled and matched!");
+    } else {
+        throw new ApiError(400, "password and confirm password must be filled and matched!");
     }
     const checkUser = User.findById(id);
-    if(!checkUser) throw new ApiError(400,"no user found")
-    const user = await User.findByIdAndUpdate(id,updateData);
-    if(!user) throw new ApiError(400,"no user found")
+    if (!checkUser) throw new ApiError(400, "no user found")
+    const user = await User.findByIdAndUpdate(id, updateData);
+    if (!user) throw new ApiError(400, "no user found")
 
-    return res.status(200).json(new ApiResponse(200,user,`data updated successfully`));
+    return res.status(200).json(new ApiResponse(200, user, `data updated successfully`));
 })
+
+export const refreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
+
+    if (!incomingRefreshToken) {
+        throw new ApiError(401, "Refresh token is missing");
+    }
+
+    try {
+        const decodedToken: any = jwt.verify(
+            incomingRefreshToken,
+            process.env.REFRESH_TOKEN_SECRET as string
+        );
+
+        const user = await User.findById(decodedToken?.id);
+
+        if (!user || (user.refreshToken !== incomingRefreshToken)) {
+            throw new ApiError(401, "Refresh token is expired or used");
+        }
+
+        const options = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict" as const
+        };
+
+        const accessToken = user.generateAccessToken();
+        const newRefreshToken = user.generateRefreshToken();
+
+        user.refreshToken = newRefreshToken;
+        await user.save({ validateBeforeSave: false });
+
+        return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", newRefreshToken, options)
+            .json({ accessToken, refreshToken: newRefreshToken, message: "Token refreshed" });
+
+    } catch (error) {
+        throw new ApiError(401, "Invalid refresh token");
+    }
+});
 
 
 // these routes are only accessible by admin
@@ -133,7 +176,7 @@ export const getUserById = asyncHandler(async (req: Request<params, {}, {}, {}>,
 });
 
 export const updateUserById = asyncHandler(async (req: Request<params, {}, requestBody, {}>, res: Response) => {
-    const { name, email, role, isActive } = req.body;  
+    const { name, email, role, isActive } = req.body;
     const { id } = req.params;
 
     if (!id) {
@@ -160,16 +203,16 @@ export const updateUserById = asyncHandler(async (req: Request<params, {}, reque
     return res.status(200).json(new ApiResponse(200, user, "User updated successfully"))
 });
 
-export const DeleteUserById = asyncHandler(async (req: Request<params, {}, {}, {}>, res: Response)=>{
+export const DeleteUserById = asyncHandler(async (req: Request<params, {}, {}, {}>, res: Response) => {
     const { id } = req.params;
 
     if (!id) {
         throw new ApiError(400, "Id is needed")
     }
-    
-    const user = await User.findByIdAndDelete(id).select('-password -refrenceToken');
-    if(!user){
-        throw new ApiError(400,"User not found!");
+
+    const user = await User.findByIdAndDelete(id).select('-password -refreshToken');
+    if (!user) {
+        throw new ApiError(400, "User not found!");
     }
-    return res.status(200).json(new ApiResponse(200,user,"User is Permanently Deleted"))
+    return res.status(200).json(new ApiResponse(200, user, "User is Permanently Deleted"))
 })

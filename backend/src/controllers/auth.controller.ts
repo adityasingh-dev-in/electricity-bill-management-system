@@ -63,7 +63,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     const { accessToken, refreshToken } = await generateBothToken(user._id.toString());
     const userResponse = await User.findById(user._id).select("-password -refreshToken");
     return res.status(200)
-        .cookie("accessToken", accessToken, { ...cookieOptions, expires: new Date(Date.now() + 15 * 60 * 60 * 1000) })
+        .cookie("accessToken", accessToken, { ...cookieOptions, expires: new Date(Date.now() + 15 * 60 * 1000) })
         .cookie("refreshToken", refreshToken, { ...cookieOptions, expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) })
         .json(new ApiResponse(200, userResponse, "User logged in successfully"))
 })
