@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import useUser from "../../hooks/useUser";
 
 interface HeaderProps {
-    isSidebarOpen: boolean;
     toggleSidebar: () => void;
 }
 
@@ -32,11 +31,6 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
             </div>
 
             <div className="flex items-center gap-4">
-                <button className="relative p-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">
-                    <Bell size={20} />
-                    <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-indigo-500 border-2 border-neutral-900" />
-                </button>
-
                 <div className="h-8 w-px bg-neutral-800 mx-2" />
 
                 <div className="flex items-center gap-3 cursor-pointer group">

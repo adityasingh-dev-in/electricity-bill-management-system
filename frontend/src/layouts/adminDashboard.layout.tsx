@@ -4,20 +4,32 @@ import Sidebar from "../components/admin/Sidebar";
 import Header from "../components/admin/Header";
 
 const AdminDashboardLayout = () => {
-    const [isSidebarOpen, setSidebarOpen] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-    const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
-    const closeSidebar = () => setSidebarOpen(false);
+    const toggleSidebar = () => {
+        if (window.innerWidth < 768) {
+            setIsMobileOpen(!isMobileOpen);
+        } else {
+            setIsCollapsed(!isCollapsed);
+        }
+    };
+
+    const closeMobileSidebar = () => setIsMobileOpen(false);
 
     return (
         <div className="flex h-screen bg-neutral-950 text-neutral-100 overflow-hidden font-sans">
             {/* Sidebar Component */}
-            <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+            <Sidebar
+                isCollapsed={isCollapsed}
+                isMobileOpen={isMobileOpen}
+                onCloseMobile={closeMobileSidebar}
+            />
 
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
                 {/* Header Component */}
-                <Header isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+                <Header isSidebarOpen={!isCollapsed} toggleSidebar={toggleSidebar} />
 
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
@@ -28,10 +40,10 @@ const AdminDashboardLayout = () => {
             </main>
 
             {/* Overlay for mobile sidebar */}
-            {isSidebarOpen && (
+            {isMobileOpen && (
                 <div
                     className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
-                    onClick={closeSidebar}
+                    onClick={closeMobileSidebar}
                 />
             )}
         </div>

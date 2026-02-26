@@ -61,7 +61,7 @@ export const getAllConsumers = asyncHandler(async (req: Request<{}, {}, {}, quer
 
     // 1. Pagination setup
     const page = Math.max(1, parseInt(qPage || '1'));
-    const limit = Math.max(1, parseInt(qLimit || '10'));
+    const limit = Math.max(1, parseInt(qLimit || '12'));
     const skip = (page - 1) * limit;
 
     // 2. Build the Query Object
