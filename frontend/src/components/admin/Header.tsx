@@ -1,4 +1,4 @@
-import { Menu, ChevronRight, Bell } from "lucide-react";
+import { Menu, ChevronRight } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import useUser from "../../hooks/useUser";
 
@@ -22,7 +22,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
                     <Menu size={24} />
                 </button>
                 <div className="flex items-center gap-2 text-sm text-neutral-400">
-                    <span className="hover:text-neutral-200 cursor-pointer hidden md:inline">Dashboard</span>
+                    <span className="hover:text-neutral-200 cursor-pointer hidden md:inline">Controls</span>
                     <ChevronRight size={14} className="hidden md:inline" />
                     <span className="text-neutral-100 font-medium capitalize">
                         {breadcrumb}

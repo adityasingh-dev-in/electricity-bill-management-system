@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Zap, CreditCard, ShieldCheck, Clock, ArrowRight, Play } from "lucide-react";
+import { CreditCard, ShieldCheck, Clock, ArrowRight, Play } from "lucide-react";
 import LandingNavbar from "../components/landing/LandingNavbar";
 import LandingFooter from "../components/landing/LandingFooter";
 
@@ -22,16 +22,13 @@ const LandingPage = () => {
                         poster="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&q=80"
                     >
                         {/* Note: User should replace this URL with their actual video file path */}
-                        <source src="https://assets.mixkit.co/videos/preview/mixkit-circuit-board-animation-1552-large.mp4" type="video/mp4" />
+                        <source src="backgroundLanding.mp4" type="video/mp4" />
                         Your browser does not support the video tag.
                     </video>
                 </div>
 
-                <div className="container mx-auto px-6 relative z-20 text-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-8 animate-fade-in">
-                        <Zap size={14} className="fill-current" />
-                        Next-Gen Electricity Management
-                    </div>
+                <div className="container mx-auto px-6 relative z-20 text-center mt-30">
+                    
 
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.1]">
                         Powering Your <br />

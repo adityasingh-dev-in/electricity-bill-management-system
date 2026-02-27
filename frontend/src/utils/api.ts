@@ -1,25 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, {
     type AxiosError,
     type InternalAxiosRequestConfig,
     type AxiosResponse
 } from 'axios';
-import { ApiError } from './ApiError.ts';
 
-// 1. Define the shape of your Backend's Error Response
 interface BackendErrorResponse {
     message: string;
     errors?: string[];
     success: boolean;
 }
 
-// 2. Define the Queue structure
 interface FailedRequest {
     resolve: (value?: any) => void;
     reject: (reason?: any) => void;
 }
 
-// 3. Extend Axios config for the retry flag
-// Note: We use 'interface' here which is inherently a type
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
     _retry?: boolean;
 }
@@ -38,11 +34,8 @@ let failedQueue: FailedRequest[] = [];
 
 const processQueue = (error: Error | null): void => {
     failedQueue.forEach((prom) => {
-        if (error) {
-            prom.reject(error);
-        } else {
-            prom.resolve();
-        }
+        if (error) prom.reject(error);
+        else prom.resolve();
     });
     failedQueue = [];
 };
@@ -52,26 +45,37 @@ axiosInstance.interceptors.response.use(
     async (error: AxiosError<BackendErrorResponse>) => {
         const originalRequest = error.config as CustomAxiosRequestConfig;
 
-        const statusCode = error.response?.status ?? 500;
-        const message = error.response?.data?.message ?? 'Something went wrong';
-        const errorData = error.response?.data?.errors ?? [];
+        if (!error.response || !originalRequest) {
+            return Promise.reject(error);
+        }
 
-        // If it's a 401 and we haven't retried yet
+        const statusCode = error.response.status;
+
+        // Handle 401 errors
         if (statusCode === 401 && !originalRequest._retry) {
-            // If already refreshing, queue this request
+            
+            // If the call that failed WAS the refresh token itself, 
+            // it means the session is totally dead. Redirect to home/login.
+            if (originalRequest.url?.includes('/auth/refresh-token')) {
+                if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+                    window.location.href = '/';
+                }
+                return Promise.reject(error);
+            }
+
             if (isRefreshing) {
                 return new Promise<AxiosResponse>((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
                 })
-                    .then(() => axiosInstance(originalRequest))
-                    .catch((err: unknown) => Promise.reject(err));
+                .then(() => axiosInstance(originalRequest))
+                .catch((err: unknown) => Promise.reject(err));
             }
 
             originalRequest._retry = true;
             isRefreshing = true;
 
             try {
-                // Call refresh endpoint using base axios to avoid interceptor loop
+                // Try to get a new access token
                 await axios.post(
                     'http://localhost:5000/api/v1/auth/refresh-token',
                     {},
@@ -81,21 +85,21 @@ axiosInstance.interceptors.response.use(
                 isRefreshing = false;
                 processQueue(null);
 
+                // Retry original request (e.g., /user/me)
                 return axiosInstance(originalRequest);
-            } catch (refreshError: unknown) {
+            } catch (refreshError: any) {
                 isRefreshing = false;
-                const finalError = refreshError instanceof Error ? refreshError : new Error('Refresh failed');
-                processQueue(finalError);
+                processQueue(refreshError);
 
-                // Clear state or redirect if refresh fails
-                if (typeof window !== 'undefined') {
-                    window.location.href = '/login';
+                // If refresh fails and we aren't home, send them home
+                if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+                    window.location.href = '/';
                 }
-                return Promise.reject(new ApiError(401, "Session expired. Please login again."));
+                return Promise.reject(refreshError);
             }
         }
 
-        return Promise.reject(new ApiError(statusCode, message, errorData));
+        return Promise.reject(error);
     }
 );
 

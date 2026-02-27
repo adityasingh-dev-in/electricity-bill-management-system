@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route, useNavigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { Signup } from './pages/signup.page'
 import { Login } from './pages/login.page'
 import api from './utils/api'
@@ -16,81 +16,71 @@ import Payments from './pages/admin/Payments'
 import Complaints from './pages/admin/Complaints'
 import Settings from './pages/admin/Settings'
 import LoadingPage from './components/LoadingPage'
-
 import LandingPage from './pages/LandingPage'
-
-async function fetchData() {
-  const response = await api.get('/user/me');
-  if (!response?.data) {
-    throw new Error("User not found")
-  }
-  return response.data.data.user;
-}
 
 const App = () => {
   const { user, setUser, loading, setLoading } = useUser();
-  const navigate = useNavigate()
 
   useEffect(() => {
     let isMounted = true;
 
-    // Only fetch if we don't have a user yet
-    if (!user) {
-      fetchData()
-        .then((data) => {
-          if (isMounted && data) {
-            setUser(data);
+    const checkAuth = async () => {
+      // If we don't have a user, try to fetch current session
+      if (!user) {
+        try {
+          // This call triggers the interceptor if AccessToken is missing
+          const response = await api.get('/user/me');
+          const userData = response.data?.data?.user;
+          
+          if (isMounted && userData) {
+            setUser(userData);
           }
-        })
-        .catch((error) => {
+        } catch (error) {
           if (isMounted) {
-            console.error("Auth initialization failed:", error);
-            navigate('/login');
+            console.log("Session verification failed: Guest Mode",error);
+            setUser(null); // Explicitly set to null to stop loading
           }
-        })
-        .finally(() => {
-          if (isMounted) {
-            setLoading(false);
-          }
-        });
-    } else {
-      setLoading(false);
-    }
-
-    return () => {
-      isMounted = false;
+        } finally {
+          if (isMounted) setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
     };
-  }, [setUser, setLoading, navigate, user]);
 
-  if (loading) {
-    return <LoadingPage />;
-  }
+    checkAuth();
+
+    return () => { isMounted = false; };
+  }, [setUser, setLoading, user]);
+
+  if (loading) return <LoadingPage />;
 
   return (
     <Routes>
-      {/* public routes */}
       <Route path='/' element={<LandingPage />} />
       <Route path='/signup' element={<Signup />} />
       <Route path='/login' element={<Login />} />
       <Route path='/forgot-password' element={<ForgotPassword />} />
 
+      {/* Protected Routes */}
       <Route element={<RouteProtector isAllowed={!!user} />}>
-        {/* Admin Routes */}
-        <Route element={<RouteProtector isAllowed={user?.role === 'admin'} />}>
-          <Route element={<AdminDashboardLayout />}>
-            <Route path='/admin/dashboard' element={<Dashboard />} />
+        <Route element={<AdminDashboardLayout />}>
+          <Route element={<RouteProtector isAllowed={user?.role === 'admin'} />}>
             <Route path='/admin/dashboard/user-Control' element={<UserControl />} />
-            <Route path='/admin/dashboard/consumer-control' element={<ConsumerControl />} />
             <Route path='/admin/dashboard/tariffs' element={<Tariffs />} />
-            <Route path='/admin/dashboard/billing' element={<Billing />} />
-            <Route path='/admin/dashboard/payments' element={<Payments />} />
-            <Route path='/admin/dashboard/complaints' element={<Complaints />} />
-            <Route path='/admin/dashboard/settings' element={<Settings />} />
+          </Route>
+          <Route element={<RouteProtector isAllowed={user?.role === 'admin' || user?.role === 'staff'}/>}>
+            <Route path='/dashboard' element={<Dashboard />} />
+            <Route path='/dashboard/consumer-control' element={<ConsumerControl />} />
+            <Route path='/dashboard/billing' element={<Billing />} />
+            <Route path='/dashboard/payments' element={<Payments />} />
+            <Route path='/dashboard/complaints' element={<Complaints />} />
+            <Route path='/dashboard/settings' element={<Settings />} />
           </Route>
         </Route>
       </Route>
     </Routes>
-  )
+  );
 }
 
-export default App
+export default App;

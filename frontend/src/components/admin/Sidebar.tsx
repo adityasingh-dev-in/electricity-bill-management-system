@@ -2,17 +2,20 @@ import { LayoutDashboard, UserSquare, Users, Zap, Receipt, CreditCard, MessageSq
 import { Link, useLocation } from "react-router-dom";
 import { clsx } from "clsx";
 import useUser from "../../hooks/useUser";
+import api from '../../utils/api';
 
-export const sidebarMenuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
+const sidebarMenuItems = [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: UserSquare, label: "User Control", path: "/admin/dashboard/user-Control" },
-    { icon: Users, label: "Consumer Control", path: "/admin/dashboard/consumer-control" },
+    { icon: Users, label: "Consumer Control", path: "/dashboard/consumer-control" },
     { icon: Zap, label: "Tariffs", path: "/admin/dashboard/tariffs" },
-    { icon: Receipt, label: "Billing", path: "/admin/dashboard/billing" },
-    { icon: CreditCard, label: "Payments", path: "/admin/dashboard/payments" },
-    { icon: MessageSquare, label: "Complaints", path: "/admin/dashboard/complaints" },
-    { icon: Settings, label: "Settings", path: "/admin/dashboard/settings" },
+    { icon: Receipt, label: "Billing", path: "/dashboard/billing" },
+    { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
+    { icon: MessageSquare, label: "Complaints", path: "/dashboard/complaints" },
+    { icon: Settings, label: "Settings", path: "/dashboard/settings" },
 ];
+
+
 
 interface SidebarProps {
     isMobileOpen: boolean;
@@ -21,8 +24,16 @@ interface SidebarProps {
 
 const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
     const location = useLocation();
-    const { user } = useUser();
-    
+    const { user, setUser } = useUser();
+    const logoutUser = async ()=>{
+        try {
+            await api.get('/auth/logout');
+            setUser(null)
+            alert('user is logout successfully')
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <aside className={clsx(
@@ -95,7 +106,7 @@ const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
                     </div>
                 </div>
 
-                <button className="flex w-full items-center gap-4 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all duration-300 font-bold text-sm group active:scale-95">
+                <button onClick={logoutUser} className="flex w-full items-center gap-4 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all duration-300 font-bold text-sm group active:scale-95">
                     <LogOut size={22} className="shrink-0 transition-transform group-hover:-translate-x-1" />
                     <span className="transition-all duration-500">
                         Sign Out

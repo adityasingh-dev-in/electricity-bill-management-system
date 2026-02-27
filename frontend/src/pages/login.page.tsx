@@ -2,20 +2,22 @@ import { useState } from 'react';
 import { useForm, type FieldValues } from 'react-hook-form';
 import api from '../utils/api';
 import { type AxiosError } from 'axios';
-import toast from 'react-hot-toast';
 import { Mail, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import useUser from '../hooks/useUser';
 
 export const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
+  const { setUser } = useUser()
 
   const onSubmit = async (data: FieldValues) => {
     setIsLoading(true);
     try {
       const response = await api.post('/auth/login', data);
+      setUser(response?.data?.data)
       alert(response.data.message || 'Login successful!');
       navigate('/');
     } catch (error) {
