@@ -1,19 +1,10 @@
 import { LayoutDashboard, UserSquare, Users, Zap, Receipt, CreditCard, MessageSquare, Settings, LogOut, ChevronRight, User as UserIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { clsx } from "clsx";
-import useUser from "../../hooks/useUser";
-import api from '../../utils/api';
+import useUser from "../hooks/useUser";
+import api from '../utils/api';
+import { useEffect, useState } from "react";
 
-const sidebarMenuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-    { icon: UserSquare, label: "User Control", path: "/admin/dashboard/user-Control" },
-    { icon: Users, label: "Consumer Control", path: "/dashboard/consumer-control" },
-    { icon: Zap, label: "Tariffs", path: "/admin/dashboard/tariffs" },
-    { icon: Receipt, label: "Billing", path: "/dashboard/billing" },
-    { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
-    { icon: MessageSquare, label: "Complaints", path: "/dashboard/complaints" },
-    { icon: Settings, label: "Settings", path: "/dashboard/settings" },
-];
 
 
 
@@ -25,6 +16,32 @@ interface SidebarProps {
 const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
     const location = useLocation();
     const { user, setUser } = useUser();
+    const [sidebarMenuItems, setSidebarMenuItems] = useState([
+            { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+            { icon: UserSquare, label: "User Control", path: "/admin/dashboard/user-Control" },
+            { icon: Users, label: "Consumer Control", path: "/dashboard/consumer-control" },
+            { icon: Zap, label: "Tariffs", path: "/admin/dashboard/tariffs" },
+            { icon: Receipt, label: "Billing", path: "/dashboard/billing" },
+            { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
+            { icon: MessageSquare, label: "Complaints", path: "/dashboard/complaints" },
+            { icon: Settings, label: "Settings", path: "/dashboard/settings" },
+        ])
+
+    useEffect(() => {
+      if(user?.role === 'staff'){
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSidebarMenuItems([
+            { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+            { icon: Users, label: "Consumer Control", path: "/dashboard/consumer-control" },
+            { icon: Receipt, label: "Billing", path: "/dashboard/billing" },
+            { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
+            { icon: MessageSquare, label: "Complaints", path: "/dashboard/complaints" },
+            { icon: Settings, label: "Settings", path: "/dashboard/settings" },
+        ])
+      }
+    }, [user])
+    
+
     const logoutUser = async ()=>{
         try {
             await api.get('/auth/logout');
@@ -52,7 +69,7 @@ const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
                         <span className="font-black text-xl tracking-tighter text-white block">
                             ELECTRO<span className="text-indigo-500">BILL</span>
                         </span>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 block -mt-1">Admin Panel</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 block -mt-1">{user?.role} Panel</span>
                     </div>
                 </div>
             </div>
@@ -102,7 +119,7 @@ const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
                     </div>
                     <div className="transition-all duration-500 overflow-hidden flex-1">
                         <p className="text-xs font-black text-white truncate uppercase tracking-tighter">{user?.name || "Admin User"}</p>
-                        <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mt-0.5">Administrator</p>
+                        <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mt-0.5">{user?.role}</p>
                     </div>
                 </div>
 
