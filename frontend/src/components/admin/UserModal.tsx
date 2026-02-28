@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { type User } from './UserTable';
+import type { User } from '../../services/user.service';
 
 interface UserModalProps {
     isOpen: boolean;

@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import axiosInstance from '../../utils/api';
-import { type User, UserTable } from '../../components/admin/UserTable';
+import { useState, useEffect, useCallback } from 'react';
+import userService, { type User, type UserQueryParams } from '../../services/user.service';
+import { UserTable } from '../../components/admin/UserTable';
 import { UserModal } from '../../components/admin/UserModal';
 import { ConfirmModal } from '../../components/admin/ConfirmModal';
 import { useDebounce } from '../../hooks/useDebounce';
+import toast from 'react-hot-toast';
 
 const UserControl = () => {
   // State for Users
@@ -37,26 +38,25 @@ const UserControl = () => {
     setLoading(true);
     setError(null);
     try {
-      // Build query string
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString(),
-      });
+      const params: UserQueryParams = {
+        page,
+        limit,
+      };
 
       if (debouncedSearchTerm) {
-        params.append(searchBy, debouncedSearchTerm);
+        params[searchBy] = debouncedSearchTerm;
       }
 
-      if (roleFilter) params.append('role', roleFilter);
-      if (statusFilter) params.append('isActive', statusFilter);
+      if (roleFilter) params.role = roleFilter;
+      if (statusFilter) params.isActive = statusFilter;
 
-      const response = await axiosInstance.get(`/user/fetch-users?${params.toString()}`);
+      const response = await userService.getUsers(params);
 
-      if (response.data.success) {
-        setUsers(response.data.data.users);
-        setTotalPages(response.data.data.pagination.pages);
+      if (response.success) {
+        setUsers(response.data.users);
+        setTotalPages(response.data.pagination.pages);
       } else {
-        setError(response.data.message || 'Failed to fetch users');
+        setError(response.message || 'Failed to fetch users');
       }
     } catch (err: any) {
       console.error(err);
@@ -90,10 +90,10 @@ const UserControl = () => {
 
   const handleUpdateSave = async (id: string, updates: Partial<User>) => {
     try {
-      const response = await axiosInstance.put(`/user/update/${id}`, updates);
-      if (response.data.success) {
-        // Refresh or optimistically update
+      const response = await userService.updateUser(id, updates);
+      if (response.success) {
         setUsers(users.map(u => u._id === id ? { ...u, ...updates } as User : u));
+        toast.success('User updated successfully');
       }
     } catch (err) {
       throw err; // Handled by Modal
@@ -104,10 +104,11 @@ const UserControl = () => {
     if (!selectedUserForDelete) return;
     setIsDeleting(true);
     try {
-      const response = await axiosInstance.delete(`/user/delete/${selectedUserForDelete._id}`);
-      if (response.data.success) {
+      const response = await userService.deleteUser(selectedUserForDelete._id);
+      if (response.success) {
         setUsers(users.filter(u => u._id !== selectedUserForDelete._id));
         setIsDeleteModalOpen(false);
+        toast.success('User deleted successfully');
         // If last item on page is deleted and not page 1, go back a page
         if (users.length === 1 && page > 1) {
           setPage(p => p - 1);
@@ -116,7 +117,7 @@ const UserControl = () => {
         }
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to delete user');
+      toast.error(err.response?.data?.message || 'Failed to delete user');
     } finally {
       setIsDeleting(false);
     }

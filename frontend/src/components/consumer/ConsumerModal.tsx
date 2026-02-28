@@ -1,24 +1,12 @@
-import { X, User, Phone, Hash, Home, Map as MapIcon, Globe, Check } from "lucide-react";
+import { X, User, Phone, Hash, Check } from "lucide-react";
 import React from "react";
-import { clsx } from "clsx";
-
-interface ConsumerFormData {
-    _id?: string;
-    name: string;
-    phone: string;
-    houseNumber: string;
-    area: string;
-    city: string;
-    state: string;
-    pincode: string;
-    meterNumber: string;
-}
+import type { Consumer } from "../../services/consumer.service";
 
 interface ConsumerModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: ConsumerFormData) => void;
-    initialData?: ConsumerFormData | null;
+    onSubmit: (data: Partial<Consumer>) => void;
+    initialData?: Consumer | null;
     title: string;
 }
 
@@ -41,7 +29,7 @@ const ConsumerModal = ({ isOpen, onClose, onSubmit, initialData, title }: Consum
     );
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-2 sm:p-4">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-neutral-950/80 backdrop-blur-md animate-in fade-in duration-300"
@@ -49,7 +37,7 @@ const ConsumerModal = ({ isOpen, onClose, onSubmit, initialData, title }: Consum
             />
 
             {/* Modal Container */}
-            <div className="relative w-full max-w-2xl max-h-[90vh] bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-500">
+            <div className="relative w-full max-w-2xl max-h-[90vh] bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-500 z-100">
 
                 {/* Fixed Header */}
                 <div className="flex items-center justify-between p-5 sm:p-7 border-b border-neutral-800/50 bg-neutral-900/80 backdrop-blur-sm shrink-0 z-10">
@@ -183,7 +171,7 @@ const ConsumerModal = ({ isOpen, onClose, onSubmit, initialData, title }: Consum
                         </button>
                         <button
                             type="submit"
-                            className="flex-[2] py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] sm:text-xs font-black rounded-2xl transition-all shadow-xl shadow-indigo-500/20 active:scale-95 flex items-center justify-center gap-2 uppercase tracking-[0.2em]"
+                            className="flex-2 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] sm:text-xs font-black rounded-2xl transition-all shadow-xl shadow-indigo-500/20 active:scale-95 flex items-center justify-center gap-2 uppercase tracking-[0.2em]"
                         >
                             <Check size={18} />
                             {initialData?._id ? "Update Account" : "Finalize & Save"}

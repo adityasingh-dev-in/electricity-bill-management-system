@@ -1,34 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
-import api from "../../utils/api";
+import consumerService, { type Consumer, type Pagination, type ConsumerQueryParams } from "../../services/consumer.service";
 import ConsumerFilters from "../../components/consumer/ConsumerFilters";
 import ConsumerCard from "../../components/consumer/ConsumerCard";
 import ConsumerModal from "../../components/consumer/ConsumerModal";
 import { ChevronLeft, ChevronRight, Loader2, Users } from "lucide-react";
-
-interface Consumer {
-    _id: string;
-    name: string;
-    phone: string;
-    houseNumber: string;
-    area: string;
-    city: string;
-    state: string;
-    pincode: string;
-    meterNumber: string;
-}
-
-interface Pagination {
-    total: number;
-    page: number;
-    pages: number;
-    hasNextPage: boolean;
-}
+import toast from "react-hot-toast";
 
 const ConsumerControl = () => {
     const [consumers, setConsumers] = useState<Consumer[]>([]);
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState<Pagination>({ total: 0, page: 1, pages: 1, hasNextPage: false });
-    const [filters, setFilters] = useState({
+    const [filters, setFilters] = useState<Required<Omit<ConsumerQueryParams, 'page' | 'limit'>>>({
         name: "",
         meterNumber: "",
         phone: "",
@@ -49,18 +31,19 @@ const ConsumerControl = () => {
     const fetchConsumers = useCallback(async (page = 1) => {
         setLoading(true);
         try {
-            const params = {
+            const params: ConsumerQueryParams = {
                 ...filters,
                 page,
                 limit: 12
             };
-            const response = await api.get("/consumer", { params });
-            if (response.data?.success) {
-                setConsumers(response.data.data.consumers);
-                setPagination(response.data.data.pagination);
+            const response = await consumerService.getConsumers(params);
+            if (response?.success) {
+                setConsumers(response.data.consumers);
+                setPagination(response.data.pagination);
             }
         } catch (error) {
             console.error("Failed to fetch consumers:", error);
+            toast.error("Failed to fetch consumers");
         } finally {
             setLoading(false);
         }
@@ -84,12 +67,14 @@ const ConsumerControl = () => {
     const handleDelete = async (id: string) => {
         if (window.confirm("Are you sure you want to delete this consumer?")) {
             try {
-                const response = await api.delete(`/consumer/${id}`);
-                if (response.data?.success) {
+                const response = await consumerService.deleteConsumer(id);
+                if (response?.success) {
+                    toast.success("Consumer deleted successfully");
                     fetchConsumers(pagination.page);
                 }
             } catch (error) {
                 console.error("Failed to delete consumer:", error);
+                toast.error("Failed to delete consumer");
             }
         }
     };
@@ -98,18 +83,20 @@ const ConsumerControl = () => {
         try {
             let response;
             if (modalState.type === "edit" && modalState.data?._id) {
-                response = await api.put(`/consumer/${modalState.data._id}`, data);
+                response = await consumerService.updateConsumer(modalState.data._id, data);
+                toast.success("Consumer updated successfully");
             } else {
-                response = await api.post("/consumer", data);
+                response = await consumerService.createConsumer(data);
+                toast.success("Consumer created successfully");
             }
 
-            if (response.data?.success) {
+            if (response?.success) {
                 setModalState({ isOpen: false, type: "add", data: null });
                 fetchConsumers(pagination.page);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to save consumer:", error);
-            alert("Error saving consumer. Please check your data.");
+            toast.error(error?.response?.data?.message || "Error saving consumer");
         }
     };
 
@@ -187,7 +174,7 @@ const ConsumerControl = () => {
                     )}
                 </>
             ) : (
-                <div className="h-96 bg-neutral-900/50 border border-neutral-800 border-dashed rounded-[2rem] flex flex-col items-center justify-center text-neutral-500 gap-4">
+                <div className="h-96 bg-neutral-900/50 border border-neutral-800 border-dashed rounded-4xl flex flex-col items-center justify-center text-neutral-500 gap-4">
                     <div className="h-16 w-16 rounded-2xl bg-neutral-800 flex items-center justify-center">
                         <Users size={32} />
                     </div>

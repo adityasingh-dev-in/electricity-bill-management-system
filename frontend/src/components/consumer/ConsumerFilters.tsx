@@ -1,15 +1,10 @@
 import { Search, Plus, RotateCcw, SlidersHorizontal } from "lucide-react";
+import type { ConsumerQueryParams } from "../../services/consumer.service";
 
 interface ConsumerFiltersProps {
-    onSearch: (filters: any) => void;
+    onSearch: (filters: Required<Omit<ConsumerQueryParams, 'page' | 'limit'>>) => void;
     onAddClick: () => void;
-    filters: {
-        name: string;
-        meterNumber: string;
-        phone: string;
-        city: string;
-        sortBy: string;
-    };
+    filters: Required<Omit<ConsumerQueryParams, 'page' | 'limit'>>;
 }
 
 const ConsumerFilters = ({ onSearch, onAddClick, filters }: ConsumerFiltersProps) => {
@@ -43,7 +38,7 @@ const ConsumerFilters = ({ onSearch, onAddClick, filters }: ConsumerFiltersProps
                     />
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-[2]">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-2">
                     <div className="space-y-1">
                         <input
                             type="text"

@@ -1,13 +1,5 @@
 import React from 'react';
-
-export interface User {
-    _id: string;
-    name: string;
-    email: string;
-    role: 'admin' | 'staff';
-    isActive: boolean;
-    createdAt: string;
-}
+import type { User } from '../../services/user.service';
 
 interface UserTableProps {
     users: User[];

@@ -1,18 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { MapPin, Phone, Hash, MoreVertical, Edit2, Trash2, Receipt, User, Globe } from "lucide-react";
+import { MapPin, Phone, Hash, MoreVertical, Edit2, Trash2, Receipt, Globe } from "lucide-react";
 import { clsx } from "clsx";
-
-interface Consumer {
-    _id: string;
-    name: string;
-    phone: string;
-    houseNumber: string;
-    area: string;
-    city: string;
-    state: string;
-    pincode: string;
-    meterNumber: string;
-}
+import type { Consumer } from "../../services/consumer.service";
 
 interface ConsumerCardProps {
     consumer: Consumer;
@@ -67,7 +56,7 @@ const ConsumerCard = ({ consumer, onEdit, onDelete }: ConsumerCardProps) => {
                     </button>
 
                     {isMenuOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[60] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-60 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                             <div className="p-1.5 space-y-1">
                                 <button
                                     onClick={() => { onEdit(consumer); setIsMenuOpen(false); }}
