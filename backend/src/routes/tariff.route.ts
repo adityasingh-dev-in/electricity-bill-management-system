@@ -1,13 +1,17 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware";
-import { createTariff, getActiveTariff } from "../controllers/tariff.controller";
+import { createTariff, getActiveTariff, getTariffHistory } from "../controllers/tariff.controller";
 import { verifyAdmin } from "../middlewares/admin.middleware";
 
 const router = Router();
 
 router.use(verifyJWT)
 
-router.post('/',verifyAdmin,createTariff);
+//public routes
 router.get('/',getActiveTariff)
+
+//admin routes
+router.post('/',verifyAdmin,createTariff);
+router.get('/history',verifyAdmin,getTariffHistory)
 
 export default router;

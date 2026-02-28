@@ -36,6 +36,29 @@ export const getActiveTariff = asyncHandler(async (req:Request,res:Response)=>{
     return res.status(200).json(new ApiResponse(200,tariff,"active tariff found"))
 })
 
-export const getTariffHistory = asyncHandler(async (req:Request,res:Response)=>{
-    
+//get /api/v1/tariff/history
+interface query{
+    limit?:string,
+    page?:string,
+}
+
+export const getTariffHistory = asyncHandler(async (req:Request<{},{},{},query>,res:Response)=>{
+
+    const limit = Math.max(1, parseInt(req.query.limit || '5'));
+    const page = Math.max(1, parseInt(req.query.page || '1'));
+    const skip = (page - 1)*limit;
+
+    const [tariff, total] = await Promise.all([
+        Tariff.find()
+        .sort({ isActive: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+        Tariff.countDocuments()
+    ])
+
+    return res.status(200).json(new ApiResponse(200,{
+        tariff,
+        totalTariff: total
+    },"tariff fetched successfully"))
 })
