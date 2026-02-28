@@ -62,3 +62,68 @@ export const getTariffHistory = asyncHandler(async (req:Request<{},{},{},query>,
         totalTariff: total
     },"tariff fetched successfully"))
 })
+
+//put /api/v1/tariff/:id
+interface params{
+    id?:string
+}
+
+export const updateTariff = asyncHandler(async (req:Request<params,{},{
+    ratePerUnit?:number,
+    fixedCharge?:number,
+},{}>,res:Response)=>{
+    const { id } = req.params;
+    const { ratePerUnit, fixedCharge } = req.body;
+
+    if(!id){
+        throw new ApiError(400,'id needed as params')
+    }
+    const mongoQuery:any = {}
+
+// Use typeof check to allow 0 as a valid input
+    if (typeof ratePerUnit === 'number') mongoQuery.ratePerUnit = ratePerUnit;
+    if (typeof fixedCharge === 'number') mongoQuery.fixedCharge = fixedCharge;
+
+    // Check if the update object is empty
+    if (Object.keys(mongoQuery).length === 0) {
+        throw new ApiError(400, "No valid fields provided for update");
+    }
+
+
+    const tariff = await Tariff.findByIdAndUpdate(
+        id,
+        { $set: mongoQuery },
+        { 
+            new: true,           // Return the modified document
+            runValidators: true  // Ensure the update obeys Schema rules
+        }
+    );
+
+    if (!tariff) {
+        throw new ApiError(404, 'Tariff not found');
+    }
+
+    return res.status(200).json(new ApiResponse(200,tariff,'tariff is updated successfully'))
+})
+
+//patch /api/v1/tariff/:id/activate
+interface params{
+    id?:string
+}
+
+export const activateTariff = asyncHandler(async (req:Request<params,{},{},{}>,res:Response)=>{
+    const { id } = req.params;
+
+    if(!id){
+        throw new ApiError(400,'id needed as params')
+    }
+
+    const tariff = await Tariff.findById(id);
+    if (!tariff) throw new ApiError(404, "Tariff not found");
+
+    tariff.isActive = true;
+
+    await tariff.save();
+
+    return res.status(200).json(new ApiResponse(200,tariff,'tariff is updated successfully'))
+})
