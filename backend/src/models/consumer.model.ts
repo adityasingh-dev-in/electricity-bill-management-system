@@ -37,7 +37,6 @@ const ConsumerSchema: Schema<IConsumer> = new Schema({
         required: true,
         trim: true
     },
-
     meterNumber: {
         type: String,
         required: true,
