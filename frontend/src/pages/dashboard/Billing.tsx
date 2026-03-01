@@ -7,8 +7,10 @@ import { MyBills } from '../../components/admin/billing/MyBills';
 import { ReadingHistory } from '../../components/admin/billing/ReadingHistory';
 import billService from '../../services/bill.service';
 import type { Bill } from '../../services/bill.service';
+import useUser from '../../hooks/useUser';
 
 const Billing = () => {
+    const { user } = useUser();
     const [activeTab, setActiveTab] = useState<'generate' | 'history' | 'my-bills' | 'reading-history'>('generate');
     const [bills, setBills] = useState<Bill[]>([]);
     const [loading, setLoading] = useState(false);
@@ -188,6 +190,7 @@ const Billing = () => {
                                 onDownloadPDF={handleDownloadPDF}
                                 onUpdateStatus={handleUpdateStatus}
                                 onDelete={handleDeleteBill}
+                                isAdmin={user?.role === 'admin'}
                             />
                         </div>
                     </div>

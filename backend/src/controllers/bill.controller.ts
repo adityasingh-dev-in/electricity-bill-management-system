@@ -8,11 +8,31 @@ import mongoose from "mongoose";
 import PDFDocument from "pdfkit";
 
 /**
+ * Helper to automatically update pending bills to overdue if past due date
+ */
+const checkAndUpdateOverdueBills = async () => {
+    try {
+        await Bill.updateMany(
+            {
+                status: 'pending',
+                dueDate: { $lt: new Date() }
+            },
+            {
+                $set: { status: 'overdue' }
+            }
+        );
+    } catch (error) {
+        console.error("Failed to update overdue bills:", error);
+    }
+};
+
+/**
  * @desc    Get All Bills (with filters)
  * @route   GET /api/v1/bill
  * @access  Private (Staff/Admin)
  */
 export const getAllBills = asyncHandler(async (req: Request, res: Response) => {
+    await checkAndUpdateOverdueBills();
     const { month, year, status, limit = 10, page = 1 } = req.query;
 
     const query: any = {};
@@ -45,6 +65,7 @@ export const getAllBills = asyncHandler(async (req: Request, res: Response) => {
  * @access  Private (Staff/Admin)
  */
 export const getBillById = asyncHandler(async (req: Request, res: Response) => {
+    await checkAndUpdateOverdueBills();
     const bill = await Bill.findById(req.params.id)
         .populate("consumerId")
         .populate("meterReadingId")
@@ -65,6 +86,7 @@ export const getBillById = asyncHandler(async (req: Request, res: Response) => {
  * @access  Private (Staff/Admin)
  */
 export const getConsumerBillHistory = asyncHandler(async (req: Request, res: Response) => {
+    await checkAndUpdateOverdueBills();
     const { consumerId } = req.params;
 
     const bills = await Bill.find({ consumerId } as any)
@@ -314,6 +336,7 @@ export const getBillPDF = asyncHandler(async (req: Request, res: Response) => {
  * @access  Private (Staff/Admin)
  */
 export const getMyBills = asyncHandler(async (req: any, res: Response) => {
+    await checkAndUpdateOverdueBills();
     const { month, year, status, limit = 10, page = 1 } = req.query;
 
     const query: any = { generatedBy: req.user?._id };

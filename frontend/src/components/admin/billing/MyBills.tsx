@@ -67,6 +67,7 @@ export const MyBills = ({
                     onDownloadPDF={onDownloadPDF}
                     onUpdateStatus={onUpdateStatus}
                     onDelete={onDelete}
+                    isAdmin={user?.role === 'admin'}
                 />
             </div>
         </div>

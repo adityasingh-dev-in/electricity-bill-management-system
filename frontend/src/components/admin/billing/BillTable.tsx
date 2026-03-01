@@ -9,6 +9,7 @@ interface BillTableProps {
     onDownloadPDF: (bill: Bill) => void;
     onUpdateStatus: (id: string, status: string) => void;
     onDelete: (id: string) => void;
+    isAdmin?: boolean;
 }
 
 export const BillTable: React.FC<BillTableProps> = ({
@@ -17,7 +18,8 @@ export const BillTable: React.FC<BillTableProps> = ({
     onViewDetails,
     onDownloadPDF,
     onUpdateStatus,
-    onDelete
+    onDelete,
+    isAdmin = false
 }) => {
     if (loading && bills.length === 0) {
         return (
@@ -104,7 +106,7 @@ export const BillTable: React.FC<BillTableProps> = ({
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
                                             </svg>
                                         </button>
-                                        {bill.status !== 'paid' && (
+                                        {isAdmin && bill.status !== 'paid' && (
                                             <button
                                                 onClick={() => onUpdateStatus(bill._id, 'paid')}
                                                 className="p-1.5 text-zinc-400 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors"
@@ -115,7 +117,7 @@ export const BillTable: React.FC<BillTableProps> = ({
                                                 </svg>
                                             </button>
                                         )}
-                                        {bill.status === 'pending' && (
+                                        {isAdmin && bill.status === 'pending' && (
                                             <button
                                                 onClick={() => onDelete(bill._id)}
                                                 className="p-1.5 text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
@@ -174,7 +176,7 @@ export const BillTable: React.FC<BillTableProps> = ({
                                 >
                                     PDF
                                 </button>
-                                {bill.status !== 'paid' && (
+                                {isAdmin && bill.status !== 'paid' && (
                                     <button
                                         onClick={() => onUpdateStatus(bill._id, 'paid')}
                                         className="flex-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 py-2 rounded-lg text-xs font-bold transition-colors border border-emerald-600/20"
@@ -182,7 +184,7 @@ export const BillTable: React.FC<BillTableProps> = ({
                                         Pay
                                     </button>
                                 )}
-                                {bill.status === 'pending' && (
+                                {isAdmin && bill.status === 'pending' && (
                                     <button
                                         onClick={() => onDelete(bill._id)}
                                         className="p-2 bg-rose-600/10 hover:bg-rose-600/20 text-rose-500 rounded-lg transition-colors border border-rose-600/10"

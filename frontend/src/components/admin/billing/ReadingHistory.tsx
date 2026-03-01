@@ -4,6 +4,7 @@ import type { Bill } from '../../../services/bill.service';
 import type { Consumer } from '../../../services/consumer.service';
 import { BillTable } from './BillTable';
 import billService from '../../../services/bill.service';
+import useUser from '../../../hooks/useUser';
 
 interface ReadingHistoryProps {
     onViewDetails: (bill: Bill) => void;
@@ -18,6 +19,7 @@ export const ReadingHistory = ({
     onUpdateStatus,
     onDelete
 }: ReadingHistoryProps) => {
+    const { user } = useUser();
     const [meterNumber, setMeterNumber] = useState('');
     const [consumer, setConsumer] = useState<Consumer | null>(null);
     const [bills, setBills] = useState<Bill[]>([]);
@@ -125,6 +127,7 @@ export const ReadingHistory = ({
                             onDownloadPDF={onDownloadPDF}
                             onUpdateStatus={onUpdateStatus}
                             onDelete={onDelete}
+                            isAdmin={user?.role === 'admin'}
                         />
                     </div>
                 </div>
