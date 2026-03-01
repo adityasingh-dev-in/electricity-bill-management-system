@@ -5,7 +5,8 @@ import {
     getConsumerBillHistory,
     updateBillStatus,
     deleteBill,
-    getBillPDF
+    getBillPDF,
+    getMyBills
 } from "../controllers/bill.controller";
 import { verifyJWT } from "../middlewares/auth.middleware";
 
@@ -15,6 +16,7 @@ const router = Router();
 router.use(verifyJWT);
 
 router.get("/", getAllBills);
+router.get("/my-bills", getMyBills);
 router.get("/:id", getBillById);
 router.get("/:id/pdf", getBillPDF);
 router.get("/consumer/:consumerId", getConsumerBillHistory);
