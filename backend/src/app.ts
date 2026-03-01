@@ -7,6 +7,8 @@ import authRouter from './routes/auth.route'
 import userRoute from './routes/user.route'
 import consumerRoute from './routes/consumer.route'
 import tariffRoute from './routes/tariff.route'
+import meterReadingRoute from './routes/meterReading.route'
+import billRoute from './routes/bill.route'
 
 import { errorHandler } from './middlewares/error.middleware';
 
@@ -35,7 +37,9 @@ app.get("/health", (_req, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/consumer", consumerRoute);
-app.use("/api/v1/tariff",tariffRoute);
+app.use("/api/v1/tariff", tariffRoute);
+app.use("/api/v1/meter-reading", meterReadingRoute);
+app.use("/api/v1/bill", billRoute);
 
 
 // 5. Root Route

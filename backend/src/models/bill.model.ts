@@ -40,6 +40,10 @@ const billSchema: Schema<IBill> = new Schema({
         type: Date,
         required: true
     },
+    paidAt: {
+        type: Date,
+        default: null
+    },
     status: {
         type: String,
         enum: ['pending', 'paid', 'overdue'],

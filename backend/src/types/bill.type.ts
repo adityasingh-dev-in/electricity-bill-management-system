@@ -10,6 +10,7 @@ export interface IBill extends Document {
     fixedCharge: number;
     totalAmount: number;
     dueDate: Date;
+    paidAt: Date;
     status: 'pending' | 'paid' | 'overdue';
     generatedBy: Schema.Types.ObjectId;
     generatedAt: Date;
