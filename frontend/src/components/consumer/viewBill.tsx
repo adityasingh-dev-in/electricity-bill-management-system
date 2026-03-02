@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
-import { X, RefreshCw, Download, Trash2, CheckCircle } from 'lucide-react';
+import { X, RefreshCw, Download, Trash2} from 'lucide-react';
 import billService from '../../services/bill.service';
 import type { Bill } from '../../services/bill.service';
-import { SkeletonRow, ErrorBanner, StatusBadge, formatCurrency, Pagination } from '../shared/ui';
+import { SkeletonRow, StatusBadge, formatCurrency, Pagination } from '../shared/ui';
 import toast from 'react-hot-toast';
 
 const PAGE_LIMIT = 5;
