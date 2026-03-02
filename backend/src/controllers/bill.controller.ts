@@ -51,9 +51,9 @@ export const getAllBills = asyncHandler(async (req: Request, res: Response) => {
         new ApiResponse(200, {
             bills,
             pagination: {
-                total: totalBills,
-                page: Number(page),
-                pages: Math.ceil(totalBills / Number(limit))
+                totalItems: totalBills,
+                currentPage: Number(page),
+                totalPages: Math.ceil(totalBills / Number(limit))
             }
         }, "Bills fetched successfully")
     );
@@ -81,19 +81,42 @@ export const getBillById = asyncHandler(async (req: Request, res: Response) => {
 });
 
 /**
- * @desc    Get Bill History for a specific Consumer
+ * @desc    Get Paginated Bill History for a specific Consumer
  * @route   GET /api/v1/bill/consumer/:consumerId
  * @access  Private (Staff/Admin)
  */
 export const getConsumerBillHistory = asyncHandler(async (req: Request, res: Response) => {
     await checkAndUpdateOverdueBills();
     const { consumerId } = req.params;
+    
+    // 1. Pagination setup
+    const page = Math.max(1, parseInt(req.query.page as string || '1'));
+    const limit = Math.max(1, parseInt(req.query.limit as string || '5'));
+    const skip = (page - 1) * limit;
 
-    const bills = await Bill.find({ consumerId } as any)
-        .sort({ billYear: -1, createdAt: -1 });
+    // 2. Database Operations
+    const [bills, total] = await Promise.all([
+        Bill.find({ consumerId: consumerId as any }) // <--- Add "as any" here
+            .populate('consumerId', 'name meterNumber')
+            .sort({ billYear: -1, createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean(),
+        Bill.countDocuments({ consumerId: consumerId as any }) // <--- And here
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
 
     return res.status(200).json(
-        new ApiResponse(200, bills, "Consumer bill history fetched")
+        new ApiResponse(200, {
+            bills,
+            pagination: {
+                totalItems: total,
+                currentPage: page,
+                totalPages,
+                hasNextPage: page < totalPages
+            }
+        }, "Consumer bill history fetched")
     );
 });
 
@@ -356,9 +379,9 @@ export const getMyBills = asyncHandler(async (req: any, res: Response) => {
         new ApiResponse(200, {
             bills,
             pagination: {
-                total: totalBills,
-                page: Number(page),
-                pages: Math.ceil(totalBills / Number(limit))
+                totalItems: totalBills,
+                currentPage: Number(page),
+                totalPages: Math.ceil(totalBills / Number(limit))
             }
         }, "Your bills fetched successfully")
     );

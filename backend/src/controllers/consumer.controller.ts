@@ -3,6 +3,7 @@ import Consumer from "../models/consumer.model";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
+import { SortOrder } from 'mongoose';
 
 interface queryParams {
     name?: string;
@@ -72,12 +73,18 @@ export const getAllConsumers = asyncHandler(async (req: Request<{}, {}, {}, quer
     if (phone) mongoQuery.phone = { $regex: phone, $options: 'i' };
     if (city) mongoQuery.city = { $regex: city, $options: 'i' };
 
+    let sortDirection: SortOrder = -1
+
+    if(sortBy === 'name' || sortBy === 'city') {
+        sortDirection = 1
+    }
+
     // 3. Database Operations
-    const sortField = typeof sortBy === 'string' ? sortBy : 'createdAt';
+    const sortField = {[typeof sortBy === 'string' ? sortBy : 'createdAt']: sortDirection}
 
     const [consumers, total] = await Promise.all([
         Consumer.find(mongoQuery)
-            .sort({ [sortField]: -1 })
+            .sort(sortField)
             .skip(skip)
             .limit(limit)
             .lean(),
@@ -89,9 +96,9 @@ export const getAllConsumers = asyncHandler(async (req: Request<{}, {}, {}, quer
         new ApiResponse(200, {
             consumers,
             pagination: {
-                total,
-                page,
-                pages: Math.ceil(total / limit),
+                totalItems: total,
+                currentPage: page,
+                totalPages: Math.ceil(total / limit),
                 hasNextPage: page < Math.ceil(total / limit)
             }
         }, "Consumers retrieved successfully")

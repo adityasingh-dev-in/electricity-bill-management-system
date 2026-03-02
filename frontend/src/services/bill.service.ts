@@ -25,6 +25,7 @@ export interface BillQueryParams {
     generatedBy?: string;
     page?: number;
     limit?: number;
+    consumerId?: string;
 }
 
 const billService = {
@@ -43,8 +44,9 @@ const billService = {
         return response.data;
     },
 
-    getConsumerBillHistory: async (consumerId: string) => {
-        const response = await api.get(`/bill/consumer/${consumerId}`);
+
+    getConsumerBillHistory: async (consumerId: string, params: { page?: number; limit?: number } = {}) => {
+        const response = await api.get(`/bill/consumer/${consumerId}`, { params });
         return response.data;
     },
 

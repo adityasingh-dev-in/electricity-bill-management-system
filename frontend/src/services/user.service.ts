@@ -13,10 +13,10 @@ export interface User {
 export interface FetchUsersResponse {
     users: User[];
     pagination: {
-        total: number;
-        page: number;
-        limit: number;
-        pages: number;
+        totalItems: number;
+        currentPage: number;
+        totalPages: number;
+        hasNextPage?: boolean;
     };
 }
 

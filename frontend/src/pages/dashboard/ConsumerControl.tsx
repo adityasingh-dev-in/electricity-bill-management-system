@@ -4,12 +4,15 @@ import ConsumerFilters from "../../components/consumer/ConsumerFilters";
 import ConsumerCard from "../../components/consumer/ConsumerCard";
 import ConsumerModal from "../../components/consumer/ConsumerModal";
 import { ChevronLeft, ChevronRight, Loader2, Users } from "lucide-react";
+import useUser from "../../hooks/useUser";
 import toast from "react-hot-toast";
 
 const ConsumerControl = () => {
+    const { user } = useUser();
+    const isAdmin = user?.role === "admin";
     const [consumers, setConsumers] = useState<Consumer[]>([]);
     const [loading, setLoading] = useState(true);
-    const [pagination, setPagination] = useState<Pagination>({ total: 0, page: 1, pages: 1, hasNextPage: false });
+    const [pagination, setPagination] = useState<Pagination>({ totalItems: 0, currentPage: 1, totalPages: 1, hasNextPage: false });
     const [filters, setFilters] = useState<Required<Omit<ConsumerQueryParams, 'page' | 'limit'>>>({
         name: "",
         meterNumber: "",
@@ -70,7 +73,7 @@ const ConsumerControl = () => {
                 const response = await consumerService.deleteConsumer(id);
                 if (response?.success) {
                     toast.success("Consumer deleted successfully");
-                    fetchConsumers(pagination.page);
+                    fetchConsumers(pagination.currentPage);
                 }
             } catch (error) {
                 console.error("Failed to delete consumer:", error);
@@ -92,7 +95,7 @@ const ConsumerControl = () => {
 
             if (response?.success) {
                 setModalState({ isOpen: false, type: "add", data: null });
-                fetchConsumers(pagination.page);
+                fetchConsumers(pagination.currentPage);
             }
         } catch (error: any) {
             console.error("Failed to save consumer:", error);
@@ -109,7 +112,7 @@ const ConsumerControl = () => {
                 </div>
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-400 bg-neutral-900 px-4 py-2 rounded-full border border-neutral-800">
                     <Users size={14} className="text-indigo-500" />
-                    Total: {pagination.total} Consumers
+                    Total: {pagination.totalItems} Consumers
                 </div>
             </div>
 
@@ -133,28 +136,29 @@ const ConsumerControl = () => {
                                 consumer={consumer}
                                 onEdit={handleEdit}
                                 onDelete={handleDelete}
+                                isAdmin={isAdmin}
                             />
                         ))}
                     </div>
 
                     {/* Pagination */}
-                    {pagination.pages > 1 && (
+                    {pagination.totalPages > 1 && (
                         <div className="flex items-center justify-center gap-4 py-6">
                             <button
-                                onClick={() => fetchConsumers(pagination.page - 1)}
-                                disabled={pagination.page === 1}
+                                onClick={() => fetchConsumers(pagination.currentPage - 1)}
+                                disabled={pagination.currentPage === 1}
                                 className="p-2 border border-neutral-800 rounded-xl hover:bg-neutral-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                             >
                                 <ChevronLeft size={20} />
                             </button>
                             <div className="flex items-center gap-2">
-                                {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((p) => (
+                                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => (
                                     <button
                                         key={p}
                                         onClick={() => fetchConsumers(p)}
                                         className={clsx(
                                             "h-10 w-10 rounded-xl font-bold transition-all active:scale-95",
-                                            pagination.page === p
+                                            pagination.currentPage === p
                                                 ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
                                                 : "text-neutral-500 hover:bg-neutral-800"
                                         )}
@@ -164,7 +168,7 @@ const ConsumerControl = () => {
                                 ))}
                             </div>
                             <button
-                                onClick={() => fetchConsumers(pagination.page + 1)}
+                                onClick={() => fetchConsumers(pagination.currentPage + 1)}
                                 disabled={!pagination.hasNextPage}
                                 className="p-2 border border-neutral-800 rounded-xl hover:bg-neutral-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                             >

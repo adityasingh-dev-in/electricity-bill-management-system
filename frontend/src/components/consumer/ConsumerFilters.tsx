@@ -9,6 +9,18 @@ interface ConsumerFiltersProps {
 
 const ConsumerFilters = ({ onSearch, onAddClick, filters }: ConsumerFiltersProps) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+
+        if (e.target.name === "phone") {
+            if (e.target.value.startsWith("+91")) {
+                e.target.value = e.target.value.slice(3);
+            } else if (e.target.value.startsWith("0")) {
+                e.target.value = e.target.value.slice(1);
+            } else if (e.target.value.startsWith("91")) {
+                e.target.value = e.target.value.slice(2);
+            } else {
+                e.target.value = e.target.value.slice(0, 10);
+            }
+        }
         const { name, value } = e.target;
         onSearch({ ...filters, [name]: value });
     };
@@ -21,6 +33,7 @@ const ConsumerFilters = ({ onSearch, onAddClick, filters }: ConsumerFiltersProps
             city: "",
             sortBy: "createdAt"
         });
+
     };
 
     return (
@@ -54,6 +67,7 @@ const ConsumerFilters = ({ onSearch, onAddClick, filters }: ConsumerFiltersProps
                             type="text"
                             name="phone"
                             value={filters.phone}
+                            maxLength={15}
                             onChange={handleChange}
                             placeholder="Phone Link"
                             className="w-full bg-neutral-950 border border-neutral-800 rounded-2xl py-3 px-4 text-sm font-medium focus:outline-none focus:border-indigo-500 transition-all"

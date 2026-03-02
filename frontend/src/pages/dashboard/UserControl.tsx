@@ -54,7 +54,7 @@ const UserControl = () => {
 
       if (response.success) {
         setUsers(response.data.users);
-        setTotalPages(response.data.pagination.pages);
+        setTotalPages(response.data.pagination.totalPages);
       } else {
         setError(response.message || 'Failed to fetch users');
       }

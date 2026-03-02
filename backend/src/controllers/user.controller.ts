@@ -151,9 +151,9 @@ export const getUsersByFilter = asyncHandler(async (req: Request<{}, {}, {}, que
         new ApiResponse(200, {
             users,
             pagination: {
-                total,
-                page,
-                pages: Math.ceil(total / limit),
+                totalItems: total,
+                currentPage: page,
+                totalPages: Math.ceil(total / limit),
                 hasNextPage: page < Math.ceil(total / limit)
             }
         }, "Users retrieved successfully")

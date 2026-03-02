@@ -15,9 +15,9 @@ export interface Consumer {
 }
 
 export interface Pagination {
-    total: number;
-    page: number;
-    pages: number;
+    totalItems: number;
+    currentPage: number;
+    totalPages: number;
     hasNextPage: boolean;
 }
 
