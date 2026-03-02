@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, CookieOptions } from "express";
 import User from "../models/user.model";
 import Otp from "../models/otp.model";
 import jwt from "jsonwebtoken";
@@ -8,9 +8,11 @@ import { ApiError } from "../utils/ApiError";
 import { generateBothToken } from "../utils/generateBothToken";
 import { ApiResponse } from "../utils/ApiResponse";
 
-const cookieOptions = {
+const cookieOptions: CookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: 'lax',
+    path: '/',
 };
 
 /**
@@ -176,8 +178,8 @@ export const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
     await User.updateOne({ email }, { $set: { isVerified: true } });
 
     return res.status(200)
-    .cookie("resetToken", resetToken, { ...cookieOptions, expires: new Date(Date.now() + 15 * 60 * 60 * 1000) })
-    .json(new ApiResponse(200, "OTP verified successfully."));
+        .cookie("resetToken", resetToken, { ...cookieOptions, expires: new Date(Date.now() + 15 * 60 * 60 * 1000) })
+        .json(new ApiResponse(200, "OTP verified successfully."));
 });
 
 /**
@@ -213,6 +215,6 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
     await user.save();
 
     return res.status(200)
-    .clearCookie("resetToken", cookieOptions)
-    .json(new ApiResponse(200, {}, "Password updated successfully. Please login."));
+        .clearCookie("resetToken", cookieOptions)
+        .json(new ApiResponse(200, {}, "Password updated successfully. Please login."));
 });

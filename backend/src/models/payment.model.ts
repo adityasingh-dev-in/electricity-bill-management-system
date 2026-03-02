@@ -27,7 +27,8 @@ const paymentSchema: Schema<IPayment> = new Schema({
     },
     transactionId: {
         type: String,
-        unique: true
+        unique: true,
+        sparse: true
     },
     status: {
         type: String,
@@ -35,5 +36,15 @@ const paymentSchema: Schema<IPayment> = new Schema({
         default: 'pending'
     }
 }, { timestamps: true });
+
+paymentSchema.index({ billId: 1 });
+paymentSchema.index({ consumerId: 1, createdAt: -1 });
+
+paymentSchema.pre('save', function () {
+    if (!this.transactionId) {
+        this.transactionId = `TXN-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    }
+});
+
 
 export default model<IPayment>('Payment', paymentSchema);
