@@ -81,7 +81,7 @@ export const createMeterReading = asyncHandler(async (req: any, res: Response) =
 
         // Calculate Due Date (15 days from now)
         const dueDate = new Date();
-        dueDate.setDate(dueDate.getDate() + 15);
+        dueDate.setDate(dueDate.getDate() + 30);
 
         // Generate Bill
         const billData: any = {
