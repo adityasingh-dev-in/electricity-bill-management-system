@@ -4,6 +4,7 @@ import useUser from "../../hooks/useUser";
 
 interface HeaderProps {
     toggleSidebar: () => void;
+    isSidebarOpen: boolean;
 }
 
 const Header = ({ toggleSidebar }: HeaderProps) => {

@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 interface SidebarProps {
     isMobileOpen: boolean;
     onCloseMobile: () => void;
+    isCollapsed: boolean;
 }
 
 const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
