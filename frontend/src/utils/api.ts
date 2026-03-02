@@ -5,6 +5,8 @@ import axios, {
     type AxiosResponse
 } from 'axios';
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
+
 interface BackendErrorResponse {
     message: string;
     errors?: string[];
@@ -12,7 +14,7 @@ interface BackendErrorResponse {
 }
 
 interface FailedRequest {
-    resolve: (value?: any) => void;
+    resolve: (token?: any) => void;
     reject: (reason?: any) => void;
 }
 
@@ -21,8 +23,8 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 }
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:5000/api/v1',
-    timeout: 10000,
+    baseURL: BASE_URL,
+    timeout: 15000, // Increased slightly for Render "cold starts"
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
@@ -45,39 +47,41 @@ axiosInstance.interceptors.response.use(
     async (error: AxiosError<BackendErrorResponse>) => {
         const originalRequest = error.config as CustomAxiosRequestConfig;
 
+        // Don't retry if there's no response or it's not a 401
         if (!error.response || !originalRequest) {
             return Promise.reject(error);
         }
 
         const statusCode = error.response.status;
 
-        // Handle 401 errors
+        // 401 Unauthorized handling
         if (statusCode === 401 && !originalRequest._retry) {
             
-            // If the call that failed WAS the refresh token itself, 
-            // it means the session is totally dead. Redirect to home/login.
+            // Critical: If refresh itself fails, log out
             if (originalRequest.url?.includes('/auth/refresh-token')) {
+                isRefreshing = false;
                 if (typeof window !== 'undefined' && window.location.pathname !== '/') {
                     window.location.href = '/';
                 }
                 return Promise.reject(error);
             }
 
+            // If a refresh is already in progress, queue this request
             if (isRefreshing) {
-                return new Promise<AxiosResponse>((resolve, reject) => {
+                return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
                 })
                 .then(() => axiosInstance(originalRequest))
-                .catch((err: unknown) => Promise.reject(err));
+                .catch((err) => Promise.reject(err));
             }
 
             originalRequest._retry = true;
             isRefreshing = true;
 
             try {
-                // Try to get a new access token
+                // Use the base axios (not the instance) to avoid interceptor loops
                 await axios.post(
-                    'http://localhost:5000/api/v1/auth/refresh-token',
+                    `${BASE_URL}/auth/refresh-token`, 
                     {},
                     { withCredentials: true }
                 );
@@ -85,14 +89,14 @@ axiosInstance.interceptors.response.use(
                 isRefreshing = false;
                 processQueue(null);
 
-                // Retry original request (e.g., /user/me)
+                // Retry the original request
                 return axiosInstance(originalRequest);
             } catch (refreshError: any) {
                 isRefreshing = false;
                 processQueue(refreshError);
 
-                // If refresh fails and we aren't home, send them home
                 if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+                    // Consider clearing local storage here if you store user data there
                     window.location.href = '/';
                 }
                 return Promise.reject(refreshError);
