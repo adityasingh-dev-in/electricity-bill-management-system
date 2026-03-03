@@ -156,9 +156,15 @@ export const sendEmailVerification = asyncHandler(async (req: Request, res: Resp
     `;
 
     // CRITICAL FIX: Do NOT await this. Let it run in background.
-    sendEmail(email, 'Your Verification Code', emailHtml).catch((err) => {
-        console.error("Background Email Failure:", err);
-    });
+    // In your controller
+    sendEmail(email, 'Your Verification Code', emailHtml)
+        .then((info) => {
+            console.log("✅ Email sent successfully:", info.response);
+        })
+        .catch((err) => {
+            console.error("❌ NODEMAILER ERROR:", err.message);
+            console.error("FULL ERROR:", err);
+        });
 
     // Respond immediately to prevent Axios timeout (15000ms)
     return res.status(200).json(new ApiResponse(200, {}, "OTP sent successfully. Check your inbox."));
