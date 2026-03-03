@@ -15,7 +15,7 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
     // Create the email in Base64 format (required by Gmail API)
     const utf8Subject = `=?utf-8?B?${Buffer.from(subject).toString('base64')}?=`;
     const messageParts = [
-      `From: <${process.env.MAIL_USER}>`,
+      `From: EBMS  <${process.env.MAIL_USER}>`,
       `To: ${to}`,
       `Content-Type: text/html; charset=utf-8`,
       `MIME-Version: 1.0`,
