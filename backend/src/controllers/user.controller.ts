@@ -1,5 +1,5 @@
 import User from "../models/user.model";
-import { Request, Response } from "express";
+import { Request, Response, CookieOptions } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
@@ -87,10 +87,12 @@ export const refreshAccessToken = asyncHandler(async (req: Request, res: Respons
             throw new ApiError(401, "Refresh token is expired or used");
         }
 
+        // FIX: Use 'none' for cross-site cookies on Render
         const options = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict" as const
+            secure: true, 
+            sameSite: "none" as const,
+            path: '/',
         };
 
         const accessToken = user.generateAccessToken();
@@ -101,8 +103,8 @@ export const refreshAccessToken = asyncHandler(async (req: Request, res: Respons
 
         return res
             .status(200)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", newRefreshToken, options)
+            .cookie("accessToken", accessToken, {...options,expires: new Date(Date.now() +  60 * 60 * 1000) })
+            .cookie("refreshToken", newRefreshToken, {...options,expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) })
             .json({ accessToken, refreshToken: newRefreshToken, message: "Token refreshed" });
 
     } catch (error) {

@@ -87,13 +87,19 @@ axiosInstance.interceptors.response.use(
                 processQueue(null);
 
                 return axiosInstance(originalRequest);
+            // Replace the catch block inside your axiosInstance interceptor
             } catch (refreshError: any) {
-    // ONLY redirect to login if it's truly a 401/403 (Token Expired)
-    // If it's a timeout (504) or network error, don't log the user out!
-                if (refreshError.response?.status === 401 || refreshError.response?.status === 403) {
-                    isRefreshing = false;
-                    window.location.href = '/';
+                isRefreshing = false;
+                processQueue(refreshError);
+
+    // FIX: Only redirect if it's a 401/403 and we aren't already at root
+                const isAuthError = refreshError.response?.status === 401 || refreshError.response?.status === 403;
+    
+                if (isAuthError && typeof window !== 'undefined' && window.location.pathname !== '/') {
+        // Optional: Clear local storage here
+                    window.location.href = '/'; 
                 }
+    
                 return Promise.reject(refreshError);
             }
         }
