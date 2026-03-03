@@ -21,37 +21,40 @@ import LandingPage from './pages/LandingPage'
 const App = () => {
   const { user, setUser, loading, setLoading } = useUser();
 
-  useEffect(() => {
+useEffect(() => {
     let isMounted = true;
 
     const checkAuth = async () => {
-      // If we don't have a user, try to fetch current session
-      if (!user) {
-        try {
-          // This call triggers the interceptor if AccessToken is missing
-          const response = await api.get('/user/me');
-          const userData = response.data?.data?.user;
-          
-          if (isMounted && userData) {
-            setUser(userData);
-          }
-        } catch (error) {
-          if (isMounted) {
-            console.log("Session verification failed: Guest Mode",error);
-            setUser(null); // Explicitly set to null to stop loading
-          }
-        } finally {
-          if (isMounted) setLoading(false);
+      // 1. Only fetch if we haven't checked for a user yet
+      // This assumes 'user' starts as null/undefined in your hook
+      try {
+        const response = await api.get('/user/me');
+        const userData = response.data?.data?.user;
+        
+        if (isMounted && userData) {
+          setUser(userData);
         }
-      } else {
-        setLoading(false);
+      } catch (error) {
+        if (isMounted) {
+          console.log("Session verification failed", error);
+          setUser(null); 
+        }
+      } finally {
+        if (isMounted) setLoading(false);
       }
     };
 
-    checkAuth();
+    // Only run the check if we don't have a user and we ARE loading
+    if (!user && loading) {
+      checkAuth();
+    } else {
+      setLoading(false);
+    }
 
     return () => { isMounted = false; };
-  }, [setUser, setLoading, user]);
+    // Remove 'user' from dependencies to prevent re-authentication loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) return <LoadingPage />;
 

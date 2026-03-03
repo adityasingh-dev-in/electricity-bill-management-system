@@ -77,10 +77,26 @@ export const logout = asyncHandler(async (req: any, res: Response) => {
         return res.status(204).json(new ApiResponse(204, {}, "Already logged out"));
     }
 
-    await User.updateOne(
-        { _id: req.user._id },
-        { $set: { refreshToken: "" } }
-    );
+    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+    
+    if (!token) {
+        throw new ApiError(401, "Unauthorized request");
+    }
+    
+    try {
+        const decodedToken: any = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string);
+        const user = await User.findById(decodedToken?.id).select("-password -refreshToken");
+            
+        await User.updateOne(
+            { _id: user?._id },
+            { $set: { refreshToken: "" } }
+        )
+    } catch (error: any) {
+        // If expired, send 401. The frontend interceptor will catch this.
+            throw new ApiError(401, error?.message || "Invalid Access Token");
+        }
+
+    
 
     res.clearCookie('accessToken', cookieOptions);
     res.clearCookie('refreshToken', cookieOptions);

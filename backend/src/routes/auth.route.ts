@@ -8,7 +8,7 @@ const router = Router()
 
 router.post("/register", register);
 router.post("/login", login)
-router.get('/logout', verifyJWT, logout)
+router.get('/logout', logout)
 router.post("/send-otp", otpRequestLimiter, sendEmailVerification)
 router.post("/verify-otp", otpVerifyLimiter, verifyOtp)
 router.post("/reset-password", resetPassword)
