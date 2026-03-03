@@ -17,6 +17,7 @@ import Complaints from './pages/dashboard/Complaints'
 import Settings from './pages/dashboard/Settings'
 import LoadingPage from './components/LoadingPage'
 import LandingPage from './pages/LandingPage'
+import NotAllowed from './pages/notAllowed'
 
 const App = () => {
   const { user, setUser, loading, setLoading } = useUser();
@@ -64,15 +65,16 @@ useEffect(() => {
       <Route path='/signup' element={<Signup />} />
       <Route path='/login' element={<Login />} />
       <Route path='/forgot-password' element={<ForgotPassword />} />
+      <Route path='/not-allowed' element={<NotAllowed />} />
 
       {/* Protected Routes */}
-      <Route element={<RouteProtector isAllowed={!!user} />}>
+      <Route element={<RouteProtector isAllowed={!!user} redirectTo="/login" />}>
         <Route element={<AdminDashboardLayout />}>
-          <Route element={<RouteProtector isAllowed={user?.role === 'admin'} />}>
+          <Route element={<RouteProtector isAllowed={user?.role === 'admin'} redirectTo="/not-allowed" />}>
             <Route path='/admin/dashboard/user-Control' element={<UserControl />} />
             <Route path='/admin/dashboard/tariffs' element={<Tariffs />} />
           </Route>
-          <Route element={<RouteProtector isAllowed={user?.role === 'admin' || user?.role === 'staff'}/>}>
+          <Route element={<RouteProtector isAllowed={user?.role === 'admin' || user?.role === 'staff'} redirectTo="/not-allowed" />}>
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/dashboard/consumer-control' element={<ConsumerControl />} />
             <Route path='/dashboard/billing' element={<Billing />} />
