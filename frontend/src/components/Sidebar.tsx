@@ -4,6 +4,7 @@ import { clsx } from "clsx";
 import useUser from "../hooks/useUser";
 import api from '../utils/api';
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 
 
@@ -19,38 +20,43 @@ const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
     const { user, setUser } = useUser();
     const navigate = useNavigate();
     const [sidebarMenuItems, setSidebarMenuItems] = useState([
-            { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-            { icon: UserSquare, label: "User Control", path: "/admin/dashboard/user-Control" },
-            { icon: Users, label: "Consumer Control", path: "/dashboard/consumer-control" },
-            { icon: Zap, label: "Tariffs", path: "/admin/dashboard/tariffs" },
-            { icon: Receipt, label: "Billing", path: "/dashboard/billing" },
-            { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
-            { icon: MessageSquare, label: "Complaints", path: "/dashboard/complaints" },
-            { icon: Settings, label: "Settings", path: "/dashboard/settings" },
-        ])
+        { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+        { icon: UserSquare, label: "User Control", path: "/admin/dashboard/user-Control" },
+        { icon: Users, label: "Consumer Control", path: "/dashboard/consumer-control" },
+        { icon: Zap, label: "Tariffs", path: "/admin/dashboard/tariffs" },
+        { icon: Receipt, label: "Billing", path: "/dashboard/billing" },
+        { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
+        { icon: MessageSquare, label: "Complaints", path: "/dashboard/complaints" },
+        { icon: Settings, label: "Settings", path: "/dashboard/settings" },
+    ])
 
     useEffect(() => {
-      if(user?.role === 'staff'){
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setSidebarMenuItems([
-            { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-            { icon: Users, label: "Consumer Control", path: "/dashboard/consumer-control" },
-            { icon: Receipt, label: "Billing", path: "/dashboard/billing" },
-            { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
-            { icon: MessageSquare, label: "Complaints", path: "/dashboard/complaints" },
-            { icon: Settings, label: "Settings", path: "/dashboard/settings" },
-        ])
-      }
+        if (user?.role === 'staff') {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setSidebarMenuItems([
+                { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+                { icon: Users, label: "Consumer Control", path: "/dashboard/consumer-control" },
+                { icon: Receipt, label: "Billing", path: "/dashboard/billing" },
+                { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
+                { icon: MessageSquare, label: "Complaints", path: "/dashboard/complaints" },
+                { icon: Settings, label: "Settings", path: "/dashboard/settings" },
+            ])
+        }
     }, [user])
-    
 
-    const logoutUser = async ()=>{
+
+    const logoutUser = async () => {
         try {
             await api.get('/auth/logout');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
             setUser(null)
-            alert('user is logout successfully')
+            toast.success('Logged out successfully');
         } catch (error) {
             console.log(error)
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            setUser(null)
         }
     }
 
@@ -62,7 +68,7 @@ const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
             "md:w-72"
         )}>
             {/* Sidebar Header */}
-            <div onClick={()=>{
+            <div onClick={() => {
                 navigate('/')
             }} className="flex h-20 items-center px-6 border-b border-neutral-800/50">
                 <div className="flex items-center gap-4 overflow-hidden">

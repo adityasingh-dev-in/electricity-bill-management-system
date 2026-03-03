@@ -18,11 +18,11 @@ export function Login() {
     setIsLoading(true);
     try {
       const response = await api.post('/auth/login', data);
-      const user = response.data.data;
+      const userData = response.data?.data?.user;
 
-      setUser(user);
-      toast.success('Logged in successfully!');
-      if (user) {
+      if (userData) {
+        setUser(userData);
+        toast.success('Logged in successfully!');
         navigate('/dashboard');
       }
     } catch (error) {

@@ -39,6 +39,8 @@ const App = () => {
       } catch (error) {
         if (isMounted) {
           console.log("Session verification failed", error);
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
           setUser(null);
         }
       } finally {
@@ -61,33 +63,33 @@ const App = () => {
   if (loading) return <LoadingPage />;
 
   return (
-      <>
+    <>
       <Toaster position="top-center" reverseOrder={false} />
       <Routes>
-      <Route path='/' element={<LandingPage />} />
-      <Route path='/signup' element={<Signup />} />
-      <Route path='/login' element={<Login />} />
-      <Route path='/forgot-password' element={<ForgotPassword />} />
-      <Route path='/not-allowed' element={<NotAllowed />} />
+        <Route path='/' element={<LandingPage />} />
+        <Route path='/signup' element={<Signup />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/not-allowed' element={<NotAllowed />} />
 
-      {/* Protected Routes */}
-      <Route element={<RouteProtector isAllowed={!!user} redirectTo="/login" />}>
-        <Route element={<AdminDashboardLayout />}>
-          <Route element={<RouteProtector isAllowed={user?.role === 'admin'} redirectTo="/not-allowed" />}>
-            <Route path='/admin/dashboard/user-Control' element={<UserControl />} />
-            <Route path='/admin/dashboard/tariffs' element={<Tariffs />} />
-          </Route>
-          <Route element={<RouteProtector isAllowed={user?.role === 'admin' || user?.role === 'staff'} redirectTo="/not-allowed" />}>
-            <Route path='/dashboard' element={<Dashboard />} />
-            <Route path='/dashboard/consumer-control' element={<ConsumerControl />} />
-            <Route path='/dashboard/billing' element={<Billing />} />
-            <Route path='/dashboard/payments' element={<Payments />} />
-            <Route path='/dashboard/complaints' element={<Complaints />} />
-            <Route path='/dashboard/settings' element={<Settings />} />
+        {/* Protected Routes */}
+        <Route element={<RouteProtector isAllowed={!!user} redirectTo="/login" />}>
+          <Route element={<AdminDashboardLayout />}>
+            <Route element={<RouteProtector isAllowed={user?.role === 'admin'} redirectTo="/not-allowed" />}>
+              <Route path='/admin/dashboard/user-Control' element={<UserControl />} />
+              <Route path='/admin/dashboard/tariffs' element={<Tariffs />} />
+            </Route>
+            <Route element={<RouteProtector isAllowed={user?.role === 'admin' || user?.role === 'staff'} redirectTo="/not-allowed" />}>
+              <Route path='/dashboard' element={<Dashboard />} />
+              <Route path='/dashboard/consumer-control' element={<ConsumerControl />} />
+              <Route path='/dashboard/billing' element={<Billing />} />
+              <Route path='/dashboard/payments' element={<Payments />} />
+              <Route path='/dashboard/complaints' element={<Complaints />} />
+              <Route path='/dashboard/settings' element={<Settings />} />
+            </Route>
           </Route>
         </Route>
-      </Route>
-    </Routes></>
+      </Routes></>
   );
 }
 

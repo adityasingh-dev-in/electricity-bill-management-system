@@ -46,7 +46,7 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
     return res.status(200)
         .cookie("accessToken", accessToken, cookieOptions)
         .cookie("refreshToken", refreshToken, cookieOptions)
-        .json(new ApiResponse(200, userResponse, "User registered successfully"))
+        .json(new ApiResponse(200, { user: userResponse, accessToken, refreshToken }, "User registered successfully"))
 })
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
@@ -67,7 +67,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     return res.status(200)
         .cookie("accessToken", accessToken, { ...cookieOptions, expires: new Date(Date.now() + 60 * 60 * 1000) })
         .cookie("refreshToken", refreshToken, { ...cookieOptions, expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) })
-        .json(new ApiResponse(200, userResponse, "User logged in successfully"))
+        .json(new ApiResponse(200, { user: userResponse, accessToken, refreshToken }, "User logged in successfully"))
 })
 
 export const logout = asyncHandler(async (req: any, res: Response) => {
@@ -78,25 +78,25 @@ export const logout = asyncHandler(async (req: any, res: Response) => {
     }
 
     const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
-    
+
     if (!token) {
         throw new ApiError(401, "Unauthorized request");
     }
-    
+
     try {
         const decodedToken: any = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string);
         const user = await User.findById(decodedToken?.id).select("-password -refreshToken");
-            
+
         await User.updateOne(
             { _id: user?._id },
             { $set: { refreshToken: "" } }
         )
     } catch (error: any) {
         // If expired, send 401. The frontend interceptor will catch this.
-            throw new ApiError(401, error?.message || "Invalid Access Token");
-        }
+        throw new ApiError(401, error?.message || "Invalid Access Token");
+    }
 
-    
+
 
     res.clearCookie('accessToken', cookieOptions);
     res.clearCookie('refreshToken', cookieOptions);

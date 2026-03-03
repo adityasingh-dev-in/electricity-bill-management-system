@@ -42,12 +42,31 @@ const processQueue = (error: Error | null): void => {
     failedQueue = [];
 };
 
+axiosInstance.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+        const token = localStorage.getItem('accessToken');
+        if (token && config.headers) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
 axiosInstance.interceptors.response.use(
-    (response: AxiosResponse) => response,
+    (response: AxiosResponse) => {
+        // If the response contains tokens in the standard data.data wrapper, store them
+        if (response.data?.data?.accessToken) {
+            localStorage.setItem('accessToken', response.data.data.accessToken);
+        }
+        if (response.data?.data?.refreshToken) {
+            localStorage.setItem('refreshToken', response.data.data.refreshToken);
+        }
+        return response;
+    },
     async (error: AxiosError<BackendErrorResponse>) => {
         const originalRequest = error.config as CustomAxiosRequestConfig;
 
-        // Don't retry if there's no response or it's not a 401
         if (!error.response || !originalRequest) {
             return Promise.reject(error);
         }
@@ -56,10 +75,12 @@ axiosInstance.interceptors.response.use(
 
         // 401 Unauthorized handling
         if (statusCode === 401 && !originalRequest._retry) {
-            
-            // Critical: If refresh itself fails, log out
+
+            // if we are already trying to refresh and it fails, logout
             if (originalRequest.url?.includes('/auth/refresh-token')) {
                 isRefreshing = false;
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
                 if (typeof window !== 'undefined' && window.location.pathname !== '/') {
                     window.location.href = '/';
                 }
@@ -71,35 +92,44 @@ axiosInstance.interceptors.response.use(
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
                 })
-                .then(() => axiosInstance(originalRequest))
-                .catch((err) => Promise.reject(err));
+                    .then(() => axiosInstance(originalRequest))
+                    .catch((err) => Promise.reject(err));
             }
 
             originalRequest._retry = true;
             isRefreshing = true;
 
-// Replace your existing refresh logic in the interceptor with this:
             try {
-    // Use the instance but skip the interceptor for this specific call
-                await axiosInstance.post('/auth/refresh-token', {}, { _retry: true } as any);
+                // Try refreshing with the token from localStorage
+                const refreshToken = localStorage.getItem('refreshToken');
+                const response = await axios.post(
+                    `${BASE_URL}/auth/refresh-token`,
+                    { refreshToken },
+                    { withCredentials: true }
+                );
+
+                // Assuming the refresh-token endpoint returns { accessToken, refreshToken } directly or in .data
+                const newAccessToken = response.data.accessToken || response.data.data?.accessToken;
+                const newRefreshToken = response.data.refreshToken || response.data.data?.refreshToken;
+
+                if (newAccessToken) localStorage.setItem('accessToken', newAccessToken);
+                if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
 
                 isRefreshing = false;
                 processQueue(null);
 
+                // Retry the original request
                 return axiosInstance(originalRequest);
-            // Replace the catch block inside your axiosInstance interceptor
             } catch (refreshError: any) {
                 isRefreshing = false;
                 processQueue(refreshError);
 
-    // FIX: Only redirect if it's a 401/403 and we aren't already at root
-                const isAuthError = refreshError.response?.status === 401 || refreshError.response?.status === 403;
-    
-                if (isAuthError && typeof window !== 'undefined' && window.location.pathname !== '/') {
-        // Optional: Clear local storage here
-                    window.location.href = '/'; 
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+
+                if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+                    window.location.href = '/';
                 }
-    
                 return Promise.reject(refreshError);
             }
         }
