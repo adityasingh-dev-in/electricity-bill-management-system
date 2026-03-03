@@ -78,25 +78,20 @@ axiosInstance.interceptors.response.use(
             originalRequest._retry = true;
             isRefreshing = true;
 
+// Replace your existing refresh logic in the interceptor with this:
             try {
-                // Use the base axios (not the instance) to avoid interceptor loops
-                await axios.post(
-                    `${BASE_URL}/auth/refresh-token`, 
-                    {},
-                    { withCredentials: true }
-                );
+    // Use the instance but skip the interceptor for this specific call
+                await axiosInstance.post('/auth/refresh-token', {}, { _retry: true } as any);
 
                 isRefreshing = false;
                 processQueue(null);
 
-                // Retry the original request
                 return axiosInstance(originalRequest);
             } catch (refreshError: any) {
-                isRefreshing = false;
-                processQueue(refreshError);
-
-                if (typeof window !== 'undefined' && window.location.pathname !== '/') {
-                    // Consider clearing local storage here if you store user data there
+    // ONLY redirect to login if it's truly a 401/403 (Token Expired)
+    // If it's a timeout (504) or network error, don't log the user out!
+                if (refreshError.response?.status === 401 || refreshError.response?.status === 403) {
+                    isRefreshing = false;
                     window.location.href = '/';
                 }
                 return Promise.reject(refreshError);
