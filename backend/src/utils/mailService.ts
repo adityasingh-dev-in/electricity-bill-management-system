@@ -1,30 +1,31 @@
 import nodemailer from 'nodemailer';
 
+// Create the transporter using OAuth2
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Must be false for 587
+    service: 'gmail',
     auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.NODEMAILER_APP_PASSWORD,
+        type: 'OAuth2',
+        user: process.env.MAIL_USER, // iampro9236@gmail.com
+        clientId: process.env.OAUTH_CLIENT_ID,
+        clientSecret: process.env.OAUTH_CLIENT_SECRET,
+        refreshToken: process.env.OAUTH_REFRESH_TOKEN,
     },
-    tls: {
-        // This is crucial: it prevents the connection from dropping 
-        // if Render has trouble verifying Gmail's SSL certificate
-        rejectUnauthorized: false,
-        minVersion: "TLSv1.2"
-    },
-    connectionTimeout: 20000, // 20 seconds
-    greetingTimeout: 20000,
 });
 
 export const sendEmail = async (to: string, subject: string, html: string) => {
     const mailOptions = {
-        from: `"Electricity Board" <${process.env.MAIL_USER}>`,
+        from: `"EBMS" <${process.env.MAIL_USER}>`,
         to,
         subject,
-        html
+        html,
     };
 
-    return await transporter.sendMail(mailOptions);
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log("✅ Email sent successfully:", info.messageId);
+        return info;
+    } catch (error) {
+        console.error("❌ Nodemailer Error:", error);
+        throw error;
+    }
 };
