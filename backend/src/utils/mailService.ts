@@ -1,16 +1,21 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, 
     auth: {
         user: process.env.MAIL_USER,
         pass: process.env.NODEMAILER_APP_PASSWORD
-    }
+    },
+
+    connectionTimeout: 5000, 
+    socketTimeout: 5000,
 });
 
 export const sendEmail = async (to: string, subject: string, html: string) => {
     const mailOptions = {
-        from: `"Motion By Plastic Services" <${process.env.MAIL_USER}>`,
+        from: `"Electricity Board" <${process.env.MAIL_USER}>`,
         to,
         subject,
         html

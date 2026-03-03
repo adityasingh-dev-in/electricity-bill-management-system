@@ -133,13 +133,14 @@ export const sendEmailVerification = asyncHandler(async (req: Request, res: Resp
 
     const generatedOtp = Math.floor(100000 + Math.random() * 900000);
 
+    // Save to DB first
     await Otp.findOneAndUpdate(
         { email },
         {
             otp: generatedOtp,
             lastSentAt: now,
             $inc: { count: 1 },
-            createdAt: now
+            createdAt: now // Ensure this updates for the TTL index
         },
         { upsert: true, new: true }
     );
@@ -151,17 +152,17 @@ export const sendEmailVerification = asyncHandler(async (req: Request, res: Resp
             <div style="background: #f4f4f4; padding: 10px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px;">
                 ${generatedOtp}
             </div>
-            <p style="color: #666; font-size: 12px; margin-top: 20px;">
-                If you did not request this code, please ignore this email or secure your account.
-            </p>
         </div>
     `;
 
-    await sendEmail(email, 'Your Verification Code', emailHtml);
+    // CRITICAL FIX: Do NOT await this. Let it run in background.
+    sendEmail(email, 'Your Verification Code', emailHtml).catch((err) => {
+        console.error("Background Email Failure:", err);
+    });
 
+    // Respond immediately to prevent Axios timeout (15000ms)
     return res.status(200).json(new ApiResponse(200, {}, "OTP sent successfully. Check your inbox."));
 });
-
 /**
  * @route   POST /api/v1/auth/verify-otp
  * @desc    Verify OTP and return password reset token

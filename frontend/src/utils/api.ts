@@ -24,7 +24,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
-    timeout: 15000, // Increased slightly for Render "cold starts"
+    timeout: 30000, // Increased slightly for Render "cold starts"
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
