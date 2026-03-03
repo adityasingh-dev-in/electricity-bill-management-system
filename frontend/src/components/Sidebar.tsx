@@ -1,5 +1,5 @@
 import { LayoutDashboard, UserSquare, Users, Zap, Receipt, CreditCard, MessageSquare, Settings, LogOut, ChevronRight, User as UserIcon } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { clsx } from "clsx";
 import useUser from "../hooks/useUser";
 import api from '../utils/api';
@@ -17,6 +17,7 @@ interface SidebarProps {
 const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
     const location = useLocation();
     const { user, setUser } = useUser();
+    const navigate = useNavigate();
     const [sidebarMenuItems, setSidebarMenuItems] = useState([
             { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
             { icon: UserSquare, label: "User Control", path: "/admin/dashboard/user-Control" },
@@ -61,7 +62,9 @@ const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
             "md:w-72"
         )}>
             {/* Sidebar Header */}
-            <div className="flex h-20 items-center px-6 border-b border-neutral-800/50">
+            <div onClick={()=>{
+                navigate('/')
+            }} className="flex h-20 items-center px-6 border-b border-neutral-800/50">
                 <div className="flex items-center gap-4 overflow-hidden">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-indigo-600 to-indigo-700 text-white shadow-[0_0_20px_rgba(79,70,229,0.4)] border border-indigo-400/20">
                         <Zap size={24} fill="currentColor" className="animate-pulse" />

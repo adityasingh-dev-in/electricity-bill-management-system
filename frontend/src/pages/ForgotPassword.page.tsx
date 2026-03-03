@@ -64,56 +64,45 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="absolute top-0 z-10 w-full min-h-screen bg-neutral-50 flex items-center justify-center p-4 selection:bg-blue-100 text-neutral-900">
-            <div className="w-full max-w-md">
-                {/* Progress Indicator */}
-                <div className="flex justify-center mb-8 gap-3">
+        <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-6 selection:bg-indigo-500/30 overflow-hidden relative">
+            {/* Decorative background blobs */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 z-0" />
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2 z-0" />
+
+            <div className="w-full max-w-md relative z-10">
+                {/* Brand/Logo Area */}
+                <div className="text-center mb-8 transform transition-all duration-500 hover:scale-105">
+                    <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 backdrop-blur-xl">
+                        <KeyRound className="h-8 w-8 text-indigo-400" />
+                    </div>
+                    <h1 className="text-4xl font-black tracking-tight text-white mb-2">
+                        {step === 1 ? 'Reset Password' : step === 2 ? 'Verify OTP' : 'New Password'}
+                    </h1>
+                    <p className="text-neutral-400 font-medium">
+                        {step === 1 ? "We'll help you get back into your account" : step === 2 ? `A code was sent to ${email}` : 'Create a secure new password'}
+                    </p>
+                </div>
+
+                {/* Progress Indicators */}
+                <div className="flex justify-center mb-6 gap-2">
                     {[1, 2, 3].map((i) => (
                         <div
                             key={i}
-                            className={`h-1.5 w-12 rounded-full transition-all duration-500 ${step >= i ? 'bg-blue-600' : 'bg-neutral-200'
-                                }`}
+                            className={`h-1 rounded-full transition-all duration-500 ${step >= i ? 'w-8 bg-indigo-500' : 'w-4 bg-neutral-800'}`}
                         />
                     ))}
                 </div>
 
-                {/* Minimal Card */}
-                <div className="bg-white border border-neutral-200 rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
-                    <div className="relative z-10 mb-8 text-center">
-                        {step === 1 && (
-                            <>
-                                <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-                                    Forgot Password?
-                                </h1>
-                                <p className="text-neutral-500 text-sm">Enter your email and we'll send reset instructions.</p>
-                            </>
-                        )}
-                        {step === 2 && (
-                            <>
-                                <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-                                    Check Email
-                                </h1>
-                                <p className="text-neutral-500 text-sm">Enter the 6-digit code sent to your inbox.</p>
-                            </>
-                        )}
-                        {step === 3 && (
-                            <>
-                                <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-                                    New Password
-                                </h1>
-                                <p className="text-neutral-500 text-sm">Secure your account with a strong password.</p>
-                            </>
-                        )}
-                    </div>
-
+                {/* glass-card from index.css */}
+                <div className="glass-card rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden">
                     <div className="relative z-10">
                         {step === 1 && (
                             <form onSubmit={handleSubmit(onSendOtp)} className="space-y-6">
-                                <div>
-                                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2 ml-1">Email Address</label>
-                                    <div className="relative">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-neutral-300 ml-1">Email Address</label>
+                                    <div className="relative group/input">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <Mail className="h-4 w-4 text-neutral-400" />
+                                            <Mail className="h-5 w-5 text-neutral-500 group-focus-within/input:text-indigo-400 transition-colors" />
                                         </div>
                                         <input
                                             {...register('email', {
@@ -125,38 +114,39 @@ const ForgotPassword = () => {
                                             })}
                                             type="email"
                                             placeholder="name@company.com"
-                                            className="block w-full pl-11 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
+                                            className="block w-full pl-12 pr-4 py-4 bg-neutral-900/50 border border-neutral-800 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-white placeholder:text-neutral-600 text-sm font-medium"
                                         />
                                     </div>
-                                    {errors.email && <p className="mt-1 text-xs text-rose-500 ml-1">{errors.email.message as string}</p>}
+                                    {errors.email && <p className="mt-1 text-xs text-rose-400 font-semibold ml-1">{errors.email.message as string}</p>}
                                 </div>
 
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full bg-neutral-900 text-white py-3 rounded-xl font-semibold hover:bg-neutral-800 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-neutral-200"
+                                    className="w-full relative group transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed pt-2"
                                 >
-                                    <span className="flex items-center justify-center gap-2">
+                                    <div className="absolute -inset-0.5 bg-linear-to-r from-indigo-500 to-purple-500 rounded-2xl blur-sm opacity-60 group-hover:opacity-100 transition duration-300" />
+                                    <div className="relative w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 overflow-hidden shadow-xl group-hover:bg-indigo-500 transition-colors">
                                         {isLoading ? (
-                                            <Loader2 className="h-4 w-4 animate-spin text-neutral-400" />
+                                            <Loader2 className="h-5 w-5 animate-spin" />
                                         ) : (
                                             <>
-                                                Send Code
-                                                <ArrowRight className="h-4 w-4" />
+                                                <span>Send Recovery Code</span>
+                                                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                             </>
                                         )}
-                                    </span>
+                                    </div>
                                 </button>
                             </form>
                         )}
 
                         {step === 2 && (
                             <form onSubmit={handleSubmit(onVerifyOtp)} className="space-y-6">
-                                <div>
-                                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2 ml-1">Verification Code</label>
-                                    <div className="relative">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-neutral-300 ml-1">Verification Code</label>
+                                    <div className="relative group/input">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <ShieldCheck className="h-4 w-4 text-neutral-400" />
+                                            <ShieldCheck className="h-5 w-5 text-neutral-500 group-focus-within/input:text-indigo-400 transition-colors" />
                                         </div>
                                         <input
                                             {...register('otp', {
@@ -167,28 +157,29 @@ const ForgotPassword = () => {
                                             type="text"
                                             placeholder="000000"
                                             maxLength={6}
-                                            className="block w-full pl-11 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all text-neutral-900 placeholder:text-neutral-400 tracking-[0.5em] font-mono text-center text-sm"
+                                            className="block w-full pl-11 pr-4 py-4 bg-neutral-900/50 border border-neutral-800 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-white placeholder:text-neutral-600 tracking-[0.5em] font-mono text-center text-lg font-bold"
                                         />
                                     </div>
-                                    {errors.otp && <p className="mt-1 text-xs text-rose-500 ml-1">{errors.otp.message as string}</p>}
+                                    {errors.otp && <p className="mt-1 text-xs text-rose-400 font-semibold ml-1">{errors.otp.message as string}</p>}
                                 </div>
 
-                                <div className="flex flex-col gap-3">
+                                <div className="flex flex-col gap-4">
                                     <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="w-full bg-neutral-900 text-white py-3 rounded-xl font-semibold hover:bg-neutral-800 transition-all shadow-lg shadow-neutral-200"
+                                        className="w-full relative group transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed pt-2"
                                     >
-                                        <span className="flex items-center justify-center gap-2">
-                                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin text-neutral-400" /> : 'Verify Code'}
-                                        </span>
+                                        <div className="absolute -inset-0.5 bg-linear-to-r from-indigo-500 to-purple-500 rounded-2xl blur-sm opacity-60 group-hover:opacity-100 transition duration-300" />
+                                        <div className="relative w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 overflow-hidden shadow-xl group-hover:bg-indigo-500 transition-colors">
+                                            {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Verify & Continue'}
+                                        </div>
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setStep(1)}
-                                        className="w-full py-2 text-xs text-neutral-500 hover:text-neutral-700 transition-colors flex items-center justify-center gap-2 font-medium"
+                                        className="w-full py-2 text-sm text-neutral-400 hover:text-indigo-400 transition-colors flex items-center justify-center gap-2 font-bold"
                                     >
-                                        <ArrowLeft className="h-3 w-3" />
+                                        <ArrowLeft className="h-4 w-4" />
                                         Change Email
                                     </button>
                                 </div>
@@ -197,11 +188,11 @@ const ForgotPassword = () => {
 
                         {step === 3 && (
                             <form onSubmit={handleSubmit(onResetPassword)} className="space-y-6">
-                                <div>
-                                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2 ml-1">New Password</label>
-                                    <div className="relative">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-neutral-300 ml-1">New Password</label>
+                                    <div className="relative group/input">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <Lock className="h-4 w-4 text-neutral-400" />
+                                            <Lock className="h-5 w-5 text-neutral-500 group-focus-within/input:text-indigo-400 transition-colors" />
                                         </div>
                                         <input
                                             {...register('newPassword', {
@@ -210,24 +201,24 @@ const ForgotPassword = () => {
                                             })}
                                             type={showPassword ? 'text' : 'password'}
                                             placeholder="••••••••"
-                                            className="block w-full pl-11 pr-12 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
+                                            className="block w-full pl-12 pr-12 py-4 bg-neutral-900/50 border border-neutral-800 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-white placeholder:text-neutral-600 text-sm font-medium"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600 transition-colors"
+                                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-500 hover:text-indigo-400 transition-colors"
                                         >
-                                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                         </button>
                                     </div>
-                                    {errors.newPassword && <p className="mt-1 text-xs text-rose-500 ml-1">{errors.newPassword.message as string}</p>}
+                                    {errors.newPassword && <p className="mt-1 text-xs text-rose-400 font-semibold ml-1">{errors.newPassword.message as string}</p>}
                                 </div>
 
-                                <div>
-                                    <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2 ml-1">Confirm Password</label>
-                                    <div className="relative">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-neutral-300 ml-1">Confirm Password</label>
+                                    <div className="relative group/input">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <KeyRound className="h-4 w-4 text-neutral-400" />
+                                            <KeyRound className="h-5 w-5 text-neutral-500 group-focus-within/input:text-indigo-400 transition-colors" />
                                         </div>
                                         <input
                                             {...register('confirmPassword', {
@@ -240,29 +231,31 @@ const ForgotPassword = () => {
                                             })}
                                             type={showPassword ? 'text' : 'password'}
                                             placeholder="••••••••"
-                                            className="block w-full pl-11 pr-12 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
+                                            className="block w-full pl-12 pr-12 py-4 bg-neutral-900/50 border border-neutral-800 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-white placeholder:text-neutral-600 text-sm font-medium"
                                         />
                                     </div>
-                                    {errors.confirmPassword && <p className="mt-1 text-xs text-rose-500 ml-1">{errors.confirmPassword.message as string}</p>}
+                                    {errors.confirmPassword && <p className="mt-1 text-xs text-rose-400 font-semibold ml-1">{errors.confirmPassword.message as string}</p>}
                                 </div>
 
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full bg-neutral-900 text-white py-3 rounded-xl font-semibold hover:bg-neutral-800 transition-all shadow-lg shadow-neutral-200"
+                                    className="w-full relative group transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed pt-2"
                                 >
-                                    <span className="flex items-center justify-center gap-2">
-                                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin text-neutral-400" /> : 'Reset Password'}
-                                    </span>
+                                    <div className="absolute -inset-0.5 bg-linear-to-r from-indigo-500 to-purple-500 rounded-2xl blur-sm opacity-60 group-hover:opacity-100 transition duration-300" />
+                                    <div className="relative w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 overflow-hidden shadow-xl group-hover:bg-indigo-500 transition-colors">
+                                        {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Set New Password'}
+                                    </div>
                                 </button>
                             </form>
                         )}
                     </div>
 
-                    <div className="mt-10 text-center relative z-10 border-t border-neutral-100 pt-8">
-                        <p className="text-neutral-500 text-sm">
+                    {/* Back to Login */}
+                    <div className="mt-10 text-center relative z-10 border-t border-neutral-800 pt-8">
+                        <p className="text-neutral-400 font-medium">
                             Remembered your password?{' '}
-                            <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+                            <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors">
                                 Back to Login
                             </Link>
                         </p>

@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import { Signup } from './pages/signup.page'
 import { Login } from './pages/login.page'
 import api from './utils/api'
@@ -22,7 +23,7 @@ import NotAllowed from './pages/notAllowed'
 const App = () => {
   const { user, setUser, loading, setLoading } = useUser();
 
-useEffect(() => {
+  useEffect(() => {
     let isMounted = true;
 
     const checkAuth = async () => {
@@ -31,14 +32,14 @@ useEffect(() => {
       try {
         const response = await api.get('/user/me');
         const userData = response.data?.data?.user;
-        
+
         if (isMounted && userData) {
           setUser(userData);
         }
       } catch (error) {
         if (isMounted) {
           console.log("Session verification failed", error);
-          setUser(null); 
+          setUser(null);
         }
       } finally {
         if (isMounted) setLoading(false);
@@ -60,7 +61,9 @@ useEffect(() => {
   if (loading) return <LoadingPage />;
 
   return (
-    <Routes>
+      <>
+      <Toaster position="top-center" reverseOrder={false} />
+      <Routes>
       <Route path='/' element={<LandingPage />} />
       <Route path='/signup' element={<Signup />} />
       <Route path='/login' element={<Login />} />
@@ -84,7 +87,7 @@ useEffect(() => {
           </Route>
         </Route>
       </Route>
-    </Routes>
+    </Routes></>
   );
 }
 

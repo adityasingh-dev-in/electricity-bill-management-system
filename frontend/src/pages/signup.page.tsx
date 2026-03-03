@@ -3,7 +3,7 @@ import { useForm, type FieldValues } from 'react-hook-form';
 import api from '../utils/api';
 import { type AxiosError } from 'axios';
 import toast from 'react-hot-toast';
-import { User, Mail, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Loader2, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 
 export const Signup = () => {
@@ -28,41 +28,49 @@ export const Signup = () => {
   };
 
   return (
-    <div className="absolute top-0 z-10 w-full min-h-screen bg-neutral-50 flex items-center justify-center p-4 selection:bg-blue-100">
-      <div className="w-full max-w-md">
-        {/* Minimal Card */}
-        <div className="bg-white border border-neutral-200 rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
-          <div className="relative z-10 text-center mb-8">
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-              Create Account
-            </h1>
-            <p className="text-neutral-500 text-sm">Join Electricity Management System today</p>
-          </div>
+    <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-6 selection:bg-indigo-500/30 overflow-hidden relative">
+      {/* Decorative background blobs */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 z-0" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2 z-0" />
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 relative z-10">
+      <div className="w-full max-w-md relative z-10">
+        {/* Brand/Logo Area */}
+        <div className="text-center mb-8 transform transition-all duration-500 hover:scale-105">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 backdrop-blur-xl">
+            <User className="h-8 w-8 text-indigo-400" />
+          </div>
+          <h1 className="text-4xl font-black tracking-tight text-white mb-2">
+            Create Account
+          </h1>
+          <p className="text-neutral-400 font-medium">Join the next-gen utility management</p>
+        </div>
+
+        {/* glass-card from index.css */}
+        <div className="glass-card rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Name Field */}
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2 ml-1">Full Name</label>
-              <div className="relative">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-neutral-300 ml-1">Full Name</label>
+              <div className="relative group/input">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User className="h-4 w-4 text-neutral-400" />
+                  <User className="h-5 w-5 text-neutral-500 group-focus-within/input:text-indigo-400 transition-colors" />
                 </div>
                 <input
                   {...register('name', { required: 'Name is required' })}
                   type="text"
                   placeholder="John Doe"
-                  className="block w-full pl-11 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
+                  className="block w-full pl-12 pr-4 py-4 bg-neutral-900/50 border border-neutral-800 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-white placeholder:text-neutral-600 text-sm font-medium"
                 />
               </div>
-              {errors.name && <p className="mt-1 text-xs text-rose-500 ml-1">{errors.name.message as string}</p>}
+              {errors.name && <p className="mt-1 text-xs text-rose-400 font-semibold ml-1">{errors.name.message as string}</p>}
             </div>
 
             {/* Email Field */}
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2 ml-1">Email Address</label>
-              <div className="relative">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-neutral-300 ml-1">Email Address</label>
+              <div className="relative group/input">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail className="h-4 w-4 text-neutral-400" />
+                  <Mail className="h-5 w-5 text-neutral-500 group-focus-within/input:text-indigo-400 transition-colors" />
                 </div>
                 <input
                   {...register('email', {
@@ -74,18 +82,18 @@ export const Signup = () => {
                   })}
                   type="email"
                   placeholder="name@company.com"
-                  className="block w-full pl-11 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
+                  className="block w-full pl-12 pr-4 py-4 bg-neutral-900/50 border border-neutral-800 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-white placeholder:text-neutral-600 text-sm font-medium"
                 />
               </div>
-              {errors.email && <p className="mt-1 text-xs text-rose-500 ml-1">{errors.email.message as string}</p>}
+              {errors.email && <p className="mt-1 text-xs text-rose-400 font-semibold ml-1">{errors.email.message as string}</p>}
             </div>
 
             {/* Password Field */}
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2 ml-1">Password</label>
-              <div className="relative">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-neutral-300 ml-1">Password</label>
+              <div className="relative group/input">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-4 w-4 text-neutral-400" />
+                  <Lock className="h-5 w-5 text-neutral-500 group-focus-within/input:text-indigo-400 transition-colors" />
                 </div>
                 <input
                   {...register('password', {
@@ -97,48 +105,57 @@ export const Signup = () => {
                   })}
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
-                  className="block w-full pl-11 pr-12 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
+                  className="block w-full pl-12 pr-12 py-4 bg-neutral-900/50 border border-neutral-800 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-white placeholder:text-neutral-600 text-sm font-medium"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-500 hover:text-indigo-400 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-xs text-rose-500 ml-1">{errors.password.message as string}</p>}
+              {errors.password && <p className="mt-1 text-xs text-rose-400 font-semibold ml-1">{errors.password.message as string}</p>}
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-neutral-900 text-white py-3 rounded-xl font-semibold hover:bg-neutral-800 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-neutral-200"
+              className="w-full relative group transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed pt-2"
             >
-              <span className="flex items-center justify-center gap-2">
+              <div className="absolute -inset-0.5 bg-linear-to-r from-indigo-500 to-purple-500 rounded-2xl blur-sm opacity-60 group-hover:opacity-100 transition duration-300" />
+              <div className="relative w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 overflow-hidden shadow-xl group-hover:bg-indigo-500 transition-colors">
                 {isLoading ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin text-neutral-400" />
-                    <span className="text-neutral-400">Creating Account...</span>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>Creating account...</span>
                   </>
                 ) : (
-                  'Sign Up'
+                  <>
+                    <span>Create Account</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </>
                 )}
-              </span>
+              </div>
             </button>
           </form>
 
           {/* Login Link */}
-          <div className="mt-10 text-center relative z-10 border-t border-neutral-100 pt-8">
-            <p className="text-neutral-500 text-sm">
+          <div className="mt-10 text-center relative z-10 border-t border-neutral-800 pt-8">
+            <p className="text-neutral-400 font-medium">
               Already have an account?{' '}
-              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+              <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors">
                 Sign in
               </Link>
             </p>
           </div>
         </div>
+
+        {/* Footer info */}
+        <p className="mt-8 text-center text-neutral-500 text-xs font-semibold px-4 opacity-70">
+          Secure enterprise-grade encryption enabled.
+        </p>
       </div>
     </div>
   );
