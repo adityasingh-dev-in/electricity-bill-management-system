@@ -32,7 +32,7 @@ const LandingNavbar = () => {
               1. Updated z-100 to z-[100] so it actually applies 
             */}
             <nav className={clsx(
-                "fixed top-0 inset-x-0 z-[100] transition-all duration-300",
+                "fixed top-0 inset-x-0 z-100 transition-all duration-300",
                 isScrolled ? "bg-neutral-950/80 backdrop-blur-lg border-b border-neutral-800 py-3" : "bg-transparent py-5"
             )}>
                 <div className="container mx-auto px-6 flex items-center justify-between">
@@ -100,7 +100,7 @@ const LandingNavbar = () => {
               3. Updated z-90 to z-[90]
             */}
             <div className={clsx(
-                "fixed inset-0 top-[70px] bg-neutral-950 z-[90] p-6 md:hidden transition-all duration-300",
+                "fixed inset-0 top-[70px] bg-neutral-950 z-90 p-6 md:hidden transition-all duration-300",
                 isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
             )}>
                 <div className="flex flex-col gap-6 items-center pt-10">

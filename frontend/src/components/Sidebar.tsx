@@ -1,4 +1,4 @@
-import { LayoutDashboard, UserSquare, Users, Zap, Receipt, CreditCard, MessageSquare, Settings, LogOut, ChevronRight, User as UserIcon } from "lucide-react";
+import { LayoutDashboard, UserSquare, Users, Zap, Receipt, CreditCard, MessageSquare, LogOut, ChevronRight, User as UserIcon } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { clsx } from "clsx";
 import useUser from "../hooks/useUser";

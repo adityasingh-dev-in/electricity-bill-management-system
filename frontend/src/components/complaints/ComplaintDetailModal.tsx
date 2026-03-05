@@ -1,4 +1,4 @@
-import { X, User, ShieldCheck, MapPin, AlertCircle, Calendar, Hash, Phone, Mail, MessageSquare } from "lucide-react";
+import { X, User, ShieldCheck, MapPin, AlertCircle, Calendar, Hash, Mail, MessageSquare } from "lucide-react";
 import React from "react";
 import type { Complaint } from "../../services/complaint.service";
 import ComplaintStatusBadge from "./ComplaintStatusBadge";
