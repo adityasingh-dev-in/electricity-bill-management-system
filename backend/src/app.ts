@@ -10,6 +10,7 @@ import tariffRoute from './routes/tariff.route'
 import meterReadingRoute from './routes/meterReading.route'
 import billRoute from './routes/bill.route'
 import paymentRoute from './routes/payment.route'
+import complaintRoute from './routes/complaint.route'
 
 import { errorHandler } from './middlewares/error.middleware';
 
@@ -60,6 +61,7 @@ app.use("/api/v1/tariff", tariffRoute);
 app.use("/api/v1/meter-reading", meterReadingRoute);
 app.use("/api/v1/bill", billRoute);
 app.use("/api/v1/payment", paymentRoute);
+app.use('/api/v1/complaint',complaintRoute)
 
 
 // 5. Root Route
