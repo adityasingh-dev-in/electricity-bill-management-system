@@ -303,8 +303,8 @@ export const getBillPDF = asyncHandler(async (req: Request, res: Response) => {
     generateHr(doc, tableTop + 15);
 
     const items = [
-        { label: "Energy Charge", value: `$${bill.energyCharge.toFixed(2)}` },
-        { label: "Fixed Connection Charge", value: `$${bill.fixedCharge.toFixed(2)}` }
+        { label: "Energy Charge", value: `Rs. ${bill.energyCharge.toFixed(2)}` },
+        { label: "Fixed Connection Charge", value: `Rs. ${bill.fixedCharge.toFixed(2)}` }
     ];
 
     let currentY = tableTop + 30;
@@ -323,7 +323,7 @@ export const getBillPDF = asyncHandler(async (req: Request, res: Response) => {
         .fontSize(16)
         .fillColor("#2c3e50")
         .text("TOTAL AMOUNT:", 50, currentY + 30)
-        .text(`$${bill.totalAmount.toFixed(2)}`, 450, currentY + 30, { align: "right" });
+        .text(`Rs. ${bill.totalAmount.toFixed(2)}`, 450, currentY + 30, { align: "right" });
 
     // --- Status Stamp ---
     doc.save();
