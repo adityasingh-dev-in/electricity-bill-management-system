@@ -10,7 +10,6 @@ import toast from 'react-hot-toast';
 
 import dashboardService, {
     type MonthlySummary,
-    type TrendData,
     type OutstandingBill
 } from '../../services/dashboard.service';
 
@@ -20,7 +19,6 @@ import { ErrorBanner } from '../../components/shared/ui';
 
 const Dashboard = () => {
     const [summary, setSummary] = useState<MonthlySummary | null>(null);
-    const [trends, setTrends] = useState<TrendData[]>([]);
     const [outstanding, setOutstanding] = useState<OutstandingBill[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -50,14 +48,12 @@ const Dashboard = () => {
             setLoading(true);
             setError(null);
 
-            const [summaryData, trendsData, outstandingData] = await Promise.all([
+            const [summaryData, outstandingData] = await Promise.all([
                 dashboardService.getMonthlySummary(),
-                dashboardService.getTrends(),
                 dashboardService.getOutstanding()
             ]);
 
             setSummary(summaryData);
-            setTrends(trendsData);
             setOutstanding(outstandingData);
             setLastUpdated(new Date());
 
