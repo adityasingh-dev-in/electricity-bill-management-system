@@ -27,7 +27,6 @@ const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
         { icon: Receipt, label: "Billing", path: "/dashboard/billing" },
         { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
         { icon: MessageSquare, label: "Complaints", path: "/dashboard/complaints" },
-        { icon: Settings, label: "Settings", path: "/dashboard/settings" },
     ])
 
     useEffect(() => {
@@ -39,7 +38,6 @@ const Sidebar = ({ isMobileOpen, onCloseMobile }: SidebarProps) => {
                 { icon: Receipt, label: "Billing", path: "/dashboard/billing" },
                 { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
                 { icon: MessageSquare, label: "Complaints", path: "/dashboard/complaints" },
-                { icon: Settings, label: "Settings", path: "/dashboard/settings" },
             ])
         }
     }, [user])

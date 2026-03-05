@@ -1,8 +1,8 @@
-import { Document, Schema } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface IComplaint extends Document {
-    consumerId: Schema.Types.ObjectId;
-    createdBy: Schema.Types.ObjectId;
+    consumerId: Types.ObjectId;
+    createdBy: Types.ObjectId;
     Title: string;
     description: string;
     area: string;

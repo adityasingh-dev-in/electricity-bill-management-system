@@ -15,7 +15,6 @@ import Tariffs from './pages/dashboard/Tariffs'
 import Billing from './pages/dashboard/Billing'
 import Payments from './pages/dashboard/Payments'
 import Complaints from './pages/dashboard/Complaints'
-import Settings from './pages/dashboard/Settings'
 import LoadingPage from './components/LoadingPage'
 import LandingPage from './pages/LandingPage'
 import NotAllowed from './pages/notAllowed'
@@ -85,7 +84,6 @@ const App = () => {
               <Route path='/dashboard/billing' element={<Billing />} />
               <Route path='/dashboard/payments' element={<Payments />} />
               <Route path='/dashboard/complaints' element={<Complaints />} />
-              <Route path='/dashboard/settings' element={<Settings />} />
             </Route>
           </Route>
         </Route>
