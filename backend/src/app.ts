@@ -11,6 +11,7 @@ import meterReadingRoute from './routes/meterReading.route'
 import billRoute from './routes/bill.route'
 import paymentRoute from './routes/payment.route'
 import complaintRoute from './routes/complaint.route'
+import dashboardRoute from './routes/dashboard.route'
 
 import { errorHandler } from './middlewares/error.middleware';
 
@@ -21,13 +22,13 @@ const allowedOrigins = [
   process.env.CORS_ORIGIN,
   'http://localhost:5173',
   'http://localhost:3000'
-].filter(Boolean) as string[]; 
+].filter(Boolean) as string[];
 
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -49,7 +50,7 @@ app.use(cookieParser());
 
 // 3. Health Check Route (Good for Load Balancers/Docker)
 app.get("/health", (_req, res) => {
-    res.status(200).json({ status: "ok", uptime: process.uptime() });
+  res.status(200).json({ status: "ok", uptime: process.uptime() });
 });
 
 
@@ -61,12 +62,13 @@ app.use("/api/v1/tariff", tariffRoute);
 app.use("/api/v1/meter-reading", meterReadingRoute);
 app.use("/api/v1/bill", billRoute);
 app.use("/api/v1/payment", paymentRoute);
-app.use('/api/v1/complaint',complaintRoute)
+app.use('/api/v1/complaint', complaintRoute)
+app.use('/api/v1/dashboard', dashboardRoute)
 
 
 // 5. Root Route
 app.get("/", (req: Request, res: Response) => {
-    res.send("API is running...");
+  res.send("API is running...");
 });
 
 // Global Error Handler

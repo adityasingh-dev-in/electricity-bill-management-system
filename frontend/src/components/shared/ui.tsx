@@ -98,12 +98,16 @@ export function TabBar<T extends string>({ tabs, active, onChange, accent = 'ind
         ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
         : 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20';
     return (
-        <div className="flex bg-zinc-900/80 p-1.5 rounded-2xl border border-zinc-800 gap-1.5">
+        /* Change the container class to: */
+        <div className="flex w-full bg-zinc-900/80 p-1.5 rounded-2xl border border-zinc-800 gap-1.5">
             {tabs.map(({ key, label }) => (
                 <button
                     key={key}
                     onClick={() => onChange(key)}
-                    className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${active === key ? activeClass : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800'}`}
+                    /* Added 'flex-1' to make every button take up equal space */
+                    className={`flex-1 px-2 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                        active === key ? activeClass : 'text-zinc-500'
+                    }`}
                 >
                     {label}
                 </button>
